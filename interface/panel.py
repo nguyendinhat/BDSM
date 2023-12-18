@@ -777,7 +777,7 @@ class VIEW3D_PT_BDSM_PANEL(Panel):
                 col = split.column(align=False)
                 col.scale_y = 1.25
                 col.prop(tool_props,'snap_elements',icon_only=True, expand=True)
-                col.prop(props,'record_snap', icon='PACKAGE',icon_only=True, expand=True)
+                col.prop(props,'record_snap', icon_value=get_icon_id('Save'),icon_only=True, expand=True)
                 col = split.column(align=False)
                 col.alignment = "LEFT"
                 col.scale_y = 1.25
