@@ -108,6 +108,7 @@ class BDSM_Mesh_Smooth_Laplacian(Operator, CommonSmoothMethods):
         return (obj and obj.type == 'MESH')
 
     def draw(self, context):
+        prefs = bpy.context.preferences.addons['BDSM'].preferences
         layout = self.layout
         col = layout.column(align=True)
         col.prop(self, 'smooth_amount')
@@ -117,8 +118,8 @@ class BDSM_Mesh_Smooth_Laplacian(Operator, CommonSmoothMethods):
         col.prop(self, 'freeze_border')
         col.prop(self, 'sharp_edge_weight')
         row = layout.row(align=True)
-        row.prop_search(context.active_object.bdsm, 'smooth_mask', context.active_object, 'vertex_groups', text='Vertex Group')
-        row.prop(context.active_object.bdsm, 'invert_mask', text='', icon='ARROW_LEFTRIGHT', toggle=True)
+        row.prop_search(prefs, 'smooth_mask', context.active_object, 'vertex_groups', text='Vertex Group')
+        row.prop(prefs, 'invert_mask', text='', icon='ARROW_LEFTRIGHT', toggle=True)
 
     def invoke(self, context, event):
         context.active_object.update_from_editmode()
@@ -229,6 +230,7 @@ class BDSM_Mesh_Smooth_Inflate(Operator, CommonSmoothMethods):
         return (obj and  obj.type == 'MESH')
 
     def draw(self, context):
+        prefs = context.preferences.addons['BDSM'].preferences
         layout = self.layout
         col = layout.column(align=True)
         col.prop(self, 'smooth_amount')
@@ -239,8 +241,8 @@ class BDSM_Mesh_Smooth_Inflate(Operator, CommonSmoothMethods):
         col.prop(self, 'freeze_border')
         col.prop(self, 'sharp_edge_weight')
         row = layout.row(align=True)
-        row.prop_search(context.active_object.bdsm, 'smooth_mask', context.active_object, 'vertex_groups', text='Vertex Group')
-        row.prop(context.active_object.bdsm, 'invert_mask', text='', icon='ARROW_LEFTRIGHT', toggle=True)
+        row.prop_search(prefs, 'smooth_mask', context.active_object, 'vertex_groups', text='Vertex Group')
+        row.prop(prefs, 'invert_mask', text='', icon='ARROW_LEFTRIGHT', toggle=True)
 
     def invoke(self, context, event):
         context.active_object.update_from_editmode()
@@ -357,6 +359,7 @@ class BDSM_Mesh_Smooth_Volume(Operator, CommonSmoothMethods):
         return (obj and obj.mode == 'EDIT' and obj.type == 'MESH')
 
     def draw(self, context):
+        prefs = context.preferences.addons['BDSM'].preferences
         layout = self.layout
         col = layout.column(align=True)
         col.prop(self, 'smooth_amount')
@@ -367,8 +370,8 @@ class BDSM_Mesh_Smooth_Volume(Operator, CommonSmoothMethods):
         col.prop(self, 'freeze_border')
         col.prop(self, 'sharp_edge_weight')
         row = layout.row(align=True)
-        row.prop_search(context.active_object.bdsm, 'smooth_mask', context.active_object, 'vertex_groups', text='Vertex Group')
-        row.prop(context.active_object.bdsm, 'invert_mask', text='', icon='ARROW_LEFTRIGHT', toggle=True)
+        row.prop_search(prefs, 'smooth_mask', context.active_object, 'vertex_groups', text='Vertex Group')
+        row.prop(prefs, 'invert_mask', text='', icon='ARROW_LEFTRIGHT', toggle=True)
 
     def invoke(self, context, event):
         context.active_object.update_from_editmode()
