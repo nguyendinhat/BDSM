@@ -275,9 +275,9 @@ def register():
         keymap.append([km, kmi])
 
         #Set Flow
-        #Hotkey option 1 - mesh.bdsm_mesh_edge_flow_mode
+        #Hotkey option 1 - mesh.bdsm_mesh_flow_mode
         km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
-        kmi = km.keymap_items.new('mesh.bdsm_mesh_edge_flow_mode', 'ONE', 'PRESS', alt=True, repeat=True)
+        kmi = km.keymap_items.new('mesh.bdsm_mesh_flow_mode', 'ONE', 'PRESS', alt=True, repeat=True)
         keymap.append([km, kmi])
 
 

@@ -4,7 +4,7 @@ bl_info = {
     'description': 'Collection of context sensitive tools',
     'blender': (3, 6, 3),
     'location': 'View3D',
-    'version': (0, 0, 1),
+    'version': (0, 0, 2),
     'doc_url': 'https://github.com/nguyendinhat/RizomUV_Bridge_for_Blender_MacOS',
     'tracker_url': 'https://github.com/nguyendinhat/bdsm/issues',
     'wiki_url': 'https://github.com/nguyendinhat/',
@@ -15,11 +15,12 @@ bl_info = {
 import bpy
 from .icons import icons
 from .keymaps import shortcut
+from .modules import EdgeFlow
 from .context import addon, context
-from .operators import op_none
 from .operators import(
                         op_control_panel,
                         op_create_object,
+                        op_mesh_flow_mode,
                         op_select_border_edges,
                         op_select_similar,
                         op_mesh_edge_select_loop_step,
@@ -33,7 +34,6 @@ from .operators import(
                         op_mesh_merge,
                         op_mesh_smooth,
                         op_mesh_vert_random,
-                        op_mesh_edge_flow,
                         op_mesh_edge_subdivide_loops,
                         op_mesh_edge_roundifier,
                         op_mesh_edge_length,
@@ -94,9 +94,7 @@ CLASSES = [
     op_mesh_vert_random.BDSM_Mesh_Vert_Random,
 
     op_mesh_edge_select_loop_step.BDSM_Mesh_Edge_Select_Loop_Step,
-    op_mesh_edge_flow.BDSM_Mesh_Edge_Flow,
-    op_mesh_edge_flow.BDSM_Mesh_Edge_Linear,
-    op_mesh_edge_flow.BDSM_Mesh_Edge_Flow_Mode,
+    op_mesh_flow_mode.BDSM_Mesh_Flow_Mode,
 
     op_mesh_edge_roundifier.BDSM_Mesh_Edge_Roundifier,
     op_mesh_edge_length.BDSM_Mesh_Edge_Length,
@@ -146,15 +144,15 @@ CLASSES = [
     op_delete.BDSM_Dissolve,
     op_quick_measure.BDSM_Quick_Measure,
 
-    op_none.OP_NONE,
     addon.BDSM_AddonPreferences,
     context.BDSM_Context,
     panel.VIEW3D_PT_BDSM_PANEL,
 ]
 
 modules = [
+    EdgeFlow,
     shortcut,
-    icons
+    icons,
 ]
 
 

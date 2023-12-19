@@ -537,9 +537,11 @@ class VIEW3D_PT_BDSM_PANEL(Panel):
                     col = box.column(align=True)
                     if props.selection_enums == 'SELECT_VERT':
                         col.operator('mesh.bdsm_mesh_vert_random', text='Vertex Random', icon_value=get_icon_id('VertexRandom'))
+                        col.operator('mesh.bdsm_mesh_vertex_curve', text='Vertex Curve', icon_value=get_icon_id('VertexRandom'))
                     if props.selection_enums in ['SELECT_EDGE','SELECT_BORDER'] :
                         col.operator('mesh.bdsm_mesh_edge_flow', text='Edge Flow', icon_value=get_icon_id('EdgeFlow'))
                         col.operator('mesh.bdsm_mesh_edge_linear', text='Edge Linear', icon_value=get_icon_id('EdgeLinear'))
+                        col.operator('mesh.bdsm_mesh_edge_curve', text='Edge Curve', icon_value=get_icon_id('EdgeLinear'))
                     col.operator('mesh.bdsm_mesh_relax', text='Relax', icon_value=get_icon_id('Relax'))
 
                 #Merge
@@ -1084,7 +1086,7 @@ class VIEW3D_PT_BDSM_PANEL(Panel):
 
             #Overlay Edit Mesh
             box = layout.box()
-            
+
             col = box.column(align=True)
             row = col.row(align=True)
             row.label(text='Overlay Edit:', icon='EDITMODE_HLT')
