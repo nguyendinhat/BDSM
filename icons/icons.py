@@ -1,5 +1,6 @@
 import os
 import bpy
+import bpy.utils.previews
 
 icons_collection = None
 icons_directory = os.path.dirname(__file__)
