@@ -12,6 +12,8 @@ def get_icon_id(identifier):
 
 
 def get_icon(identifier):
+    global icons_collection
+    global icons_directory
     if identifier in icons_collection:
         return icons_collection[identifier]
     return icons_collection.load(identifier, os.path.join(icons_directory, identifier + ".png"), "IMAGE")
@@ -23,6 +25,7 @@ def initialize_icons_collection():
 
 
 def unload_icons():
+    global icons_directory
     bpy.utils.previews.remove(icons_collection)
 
 
