@@ -106,9 +106,11 @@ class VIEW3D_PT_BDSM_PANEL(Panel):
             col = box.column(align=True)
             row = col.row(align=True)
             row.label(text='Image:', icon='FILE_IMAGE')
-            row = col.row(align=True)
-            row.operator('import_image.to_plane', text='Reference', icon='IMAGE_REFERENCE')
-            row.operator('object.load_background_image', text='Background', icon='IMAGE_BACKGROUND')
+            col = box.column(align=True)
+            col.operator('import_image.to_plane', text='Image to Plane', icon='TEXTURE')
+            col.operator('object.load_reference_image', text='Reference Image', icon='IMAGE_REFERENCE')
+            col.operator('object.load_background_image', text='Background', icon='IMAGE_BACKGROUND')
+
 
         #EDIT_TAB
         if props.topbar_enums == 'EDIT_TAB':
