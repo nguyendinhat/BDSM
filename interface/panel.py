@@ -575,6 +575,12 @@ class VIEW3D_PT_BDSM_PANEL(Panel):
             col = box.column(align=True)
             row = col.row(align=True)
             row.prop(props, 'tg_modifier_apply',text='Modifier', icon='MODIFIER', toggle=True)
+            row.operator('object.apply_all_modifiers', text='Apply All', icon='IMPORT')
+            row = col.row(align=True)
+            row.operator('wm.toggle_all_show_expanded', text='Stack', icon='FULLSCREEN_ENTER')
+            row.operator('object.delete_all_modifiers', text='Delete All', icon='X')
+            col = box.column(align=True)
+            col.operator('wm.call_menu', text='Add Modifier', icon='ADD').name = 'OBJECT_MT_modifier_add'
 
             box = layout.box()
             col = box.column(align=True)

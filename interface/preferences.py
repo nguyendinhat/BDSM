@@ -2,10 +2,26 @@ import bpy
 import rna_keymap_ui
 
 def prefs_ui(self, layout):
-    col = layout.column()
+    
+    box = layout.box()
+    col = box.column(align=True)
+    col.label(text='Mesh F2:')
+    col.prop(self, 'f2_autograb')
+    col.prop(self, 'f2_adjustuv')
+    col.prop(self, 'f2_extendvert')
+    col = box.column(align=True)
+    col.label(text='use active material when creating:')
+    col.prop(self, 'f2_quad_from_e_mat')
+    col.prop(self, 'f2_quad_from_v_mat')
+    col.prop(self, 'f2_tris_from_v_mat')
+    col.prop(self, 'f2_ngons_v_mat')
+    
+    box = layout.box()
+    col = box.column(align=True)
     col.scale_y = 1.2
     col.use_property_split = False
-    col.prop(self, "show_shortcuts", icon='DISCLOSURE_TRI_DOWN' if self.show_shortcuts else 'DISCLOSURE_TRI_RIGHT')
+    col.label(text='Shortcut:')
+    col.prop(self, 'show_shortcuts', icon='DISCLOSURE_TRI_DOWN' if self.show_shortcuts else 'DISCLOSURE_TRI_RIGHT')
     if self.show_shortcuts:
         shortcuts_box = col.row().box()
         bdsm_entries = []
@@ -15,7 +31,7 @@ def prefs_ui(self, layout):
         for km in kc.keymaps:
             entry = []
             for i in km.keymap_items:
-                if ".bdsm_" in i.idname or i.idname.startswith("bdsm."):
+                if '.bdsm_' in i.idname or i.idname.startswith('bdsm.'):
                     entry.append(i)
                     if self.show_conflicts:
                         found = find_conflict(km, i)
@@ -35,10 +51,10 @@ def prefs_ui(self, layout):
                 col.label(text=str(km.name))
                 for i in kmi:
                     row = col.row()
-                    row.context_pointer_set("keymap", km)
+                    row.context_pointer_set('keymap', km)
                     rna_keymap_ui.draw_kmi([], kc, km, i, row, 0)
         col.separator()
-        col.prop(self, "show_conflicts", icon='DISCLOSURE_TRI_DOWN' if self.show_conflicts else 'DISCLOSURE_TRI_RIGHT')
+        col.prop(self, 'show_conflicts', icon='DISCLOSURE_TRI_DOWN' if self.show_conflicts else 'DISCLOSURE_TRI_RIGHT')
         if self.show_conflicts:
             conflicts_box = col.row().box()
             if conflicts:
@@ -47,8 +63,11 @@ def prefs_ui(self, layout):
                     col.label(text=str(k.name))
                     for i in conflicts[k]:
                         row = col.row()
-                        col.context_pointer_set("keymap", k)
+                        col.context_pointer_set('keymap', k)
                         rna_keymap_ui.draw_kmi([], kc, k, i, row, 0)
+
+
+
 
 def find_conflict(skm, i):
     ku = bpy.context.window_manager.keyconfigs.user

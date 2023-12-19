@@ -190,6 +190,35 @@ class BDSM_AddonPreferences(AddonPreferences):
         name="Show Possible Shortcut Conflicts", 
         default=False
     )
+#============[Mesh F2]=============
+    f2_adjustuv : bpy.props.BoolProperty(
+        name="Adjust UV",
+        description="Automatically update UV unwrapping",
+        default=False)
+    f2_autograb : bpy.props.BoolProperty(
+        name="Auto Grab",
+        description="Automatically puts a newly created vertex in grab mode",
+        default=True)
+    f2_extendvert : bpy.props.BoolProperty(
+        name="Enable Extend Vert",
+        description="Enables a way to build tris and quads by adding verts",
+        default=False)
+    f2_quad_from_e_mat : bpy.props.BoolProperty(
+        name="Quad From Edge",
+        description="Use active material for created face instead of close one",
+        default=True)
+    f2_quad_from_v_mat : bpy.props.BoolProperty(
+        name="Quad From Vert",
+        description="Use active material for created face instead of close one",
+        default=True)
+    f2_tris_from_v_mat : bpy.props.BoolProperty(
+        name="Tris From Vert",
+        description="Use active material for created face instead of close one",
+        default=True)
+    f2_ngons_v_mat : bpy.props.BoolProperty(
+        name="Ngons",
+        description="Use active material for created face instead of close one",
+        default=True)
 
 #============[Prefs UI]=============
     def draw(self, context):

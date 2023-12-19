@@ -10,9 +10,6 @@ class BDSM_ControlPanel(Operator):
     bl_description = 'BDSM Control Panel'
     bl_options = {'REGISTER', 'UNDO'}
 
-    @classmethod
-    def poll(cls, context):
-        return context.active_object is not None
 
     def execute(self, context):
         props = context.window_manager.BDSM_Context

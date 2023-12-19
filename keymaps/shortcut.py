@@ -240,7 +240,7 @@ def register():
 
 
         #todo: Mesh
-        #Extrude
+        #todo: Extrude
         #Hotkey shift drag-mid - view3d.edit_mesh_extrude_move_normal
         km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
         kmi = km.keymap_items.new('mesh.bdsm_mesh_extrude', 'LEFTMOUSE', 'PRESS', ctrl=True)
@@ -252,38 +252,49 @@ def register():
         kmi.properties.cycle = True
         kmi.properties.as_fallback = False
         keymap.append([km, kmi])
-        #Bevel
+        #todo: Bevel
         #Hotkey cmd B - mesh.bdsm_mesh_bevel
         km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
         kmi = km.keymap_items.new('mesh.bdsm_mesh_bevel', 'B', 'PRESS', oskey=True)
         keymap.append([km, kmi])
-        #Connect
+        #Ctodo: onnect
         #Hotkey shift cmd E - mesh.bdsm_mesh_connect
         km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
         kmi = km.keymap_items.new('mesh.bdsm_mesh_connect', 'E', 'PRESS', oskey=True, shift=True)
         keymap.append([km, kmi])
-        #Split
+        #todo: Split
         #Hotkey Y - mesh.bdsm_mesh_split
         km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
         kmi = km.keymap_items.new('mesh.bdsm_mesh_split', 'Y', 'PRESS')
         keymap.append([km, kmi])
-        #Target Weld
+        #todo: Target Weld
         #Hotkey cmd T - view3d.bdsm_targetweld
         km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
         kmi = km.keymap_items.new('view3d.bdsm_targetweld', 'T', 'PRESS', oskey=True)
         kmi.properties.toggle = True
         keymap.append([km, kmi])
 
-        #Set Flow
+        #todo: Set Flow
         #Hotkey option 1 - mesh.bdsm_mesh_flow_mode
         km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
         kmi = km.keymap_items.new('mesh.bdsm_mesh_flow_mode', 'ONE', 'PRESS', alt=True, repeat=True)
         keymap.append([km, kmi])
 
+        #todo: Merge
+        #Hotkey J - mesh.bdsm_mesh_merge_mouse
+        km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
+        kmi = km.keymap_items.new('mesh.bdsm_mesh_merge_mouse', 'J', 'PRESS', repeat=True)
+        keymap.append([km, kmi])
+        
+        #todo: Mesh F2
+        #Hotkey shift F - mesh.bdsm_mesh_f2
+        km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
+        kmi = km.keymap_items.new('mesh.bdsm_mesh_f2', 'F', 'PRESS', shift=True, repeat=True)
+        keymap.append([km, kmi])
 
 
 
-        #Delete
+        #todo: Delete
         #Hotkey backspace - view3d.bdsm_delete
         km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
         kmi = km.keymap_items.new('view3d.bdsm_delete', 'BACK_SPACE', 'PRESS')
