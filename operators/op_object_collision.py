@@ -144,7 +144,7 @@ class BDSM_Object_Collision(Operator):
                     return {'CANCELLED'}
 
                 avg_pos, side_x, side_y, side_z = bbox_calc(bbx, bby, bbz)
-                bpy.ops.mesh.primitive_cube_add(width=side_x / 2, depth=side_y / 2, height=side_z / 2,
+                bpy.ops.mesh.bdsm_mesh_primitive_box_add(width=side_x / 2, depth=side_y / 2, height=side_z / 2,
                                                   align='WORLD', location=avg_pos, rotation=(0, 0, 0))
 
                 col_obj = [o for o in context.scene.objects if o.type == 'MESH'][-1]
@@ -253,7 +253,7 @@ class BDSM_Object_Collision(Operator):
 
                         avg_pos, side_x, side_y, side_z = bbox_calc(bbx, bby, bbz)
 
-                        bpy.ops.mesh.primitive_cube_add(width=side_x / 2, depth=side_y / 2, height=side_z / 2,
+                        bpy.ops.mesh.bdsm_mesh_primitive_box_add(width=side_x / 2, depth=side_y / 2, height=side_z / 2,
                                                           align='WORLD', location=avg_pos, rotation=(0, 0, 0))
 
                         new_obj = context.view_layer.objects.active
@@ -285,7 +285,7 @@ class BDSM_Object_Collision(Operator):
 
                     avg_pos, side_x, side_y, side_z = bbox_calc(bbx, bby, bbz)
 
-                    bpy.ops.mesh.primitive_cube_add(width=side_x / 2, depth=side_y / 2, height=side_z / 2,
+                    bpy.ops.mesh.bdsm_mesh_primitive_box_add(width=side_x / 2, depth=side_y / 2, height=side_z / 2,
                                                       align='WORLD', location=avg_pos, rotation=(0, 0, 0))
 
                     new_obj = context.view_layer.objects.active

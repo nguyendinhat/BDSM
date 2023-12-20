@@ -15,7 +15,7 @@ bl_info = {
 import bpy
 from .icons import icons
 from .keymaps import shortcut
-from .modules import EdgeFlow, MeshF2, ModifierTool
+from .modules import EdgeFlow, MeshF2, ModifierTool, Primitive
 from .context import addon, context
 from .operators import(
                         op_control_panel,
@@ -154,7 +154,8 @@ modules = [
     MeshF2,
     shortcut,
     icons,
-    ModifierTool
+    ModifierTool,
+    Primitive
 ]
 
 
