@@ -177,22 +177,26 @@ Addons = [
 
 
 def register():
+    for module in modules:
+        module.register()
+
     for cls in CLASSES:
         bpy.utils.register_class(cls)
 
     bpy.types.WindowManager.BDSM_Context = bpy.props.PointerProperty(type=context.BDSM_Context)
-    for module in modules:
-        module.register()
+    
 
 
 
 def unregister():
-    for module in reversed(modules):
-        module.unregister()
+    
 
     del bpy.types.WindowManager.BDSM_Context
     for cls in reversed(CLASSES):
         bpy.utils.unregister_class(cls)
+    
+    for module in reversed(modules):
+            module.unregister()
 
 
 if __name__ == '__main__':
