@@ -16,6 +16,8 @@ import bpy
 from .icons import icons
 from .keymaps import shortcut
 from .modules import EdgeFlow, MeshF2, ModifierTool, Primitive
+from .modules.MACHIN3 import PUNCHit
+
 from .context import addon, context
 from .operators import(
                         op_control_panel,
@@ -156,6 +158,7 @@ modules = [
     shortcut,
     icons,
     ModifierTool,
+    PUNCHit
 ]
 
 

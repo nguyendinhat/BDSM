@@ -4,6 +4,8 @@ from bpy.types import AddonPreferences
 from .. context import items
 from .. interface.preferences import prefs_ui
 
+from .. modules.MACHIN3.PUNCHit.utils.registration import get_path as machin3_punchit_get_path
+
 class BDSM_AddonPreferences(AddonPreferences):
     bl_idname = 'BDSM'
     bl_options = {'REGISTER', 'UNDO_GROUPED'}
@@ -187,7 +189,7 @@ class BDSM_AddonPreferences(AddonPreferences):
         default=False
     )
     show_conflicts: BoolProperty(
-        name="Show Possible Shortcut Conflicts", 
+        name="Show Possible Shortcut Conflicts",
         default=False
     )
 #============[Mesh F2]=============
@@ -219,7 +221,13 @@ class BDSM_AddonPreferences(AddonPreferences):
         name="Ngons",
         description="Use active material for created face instead of close one",
         default=True)
-
+#==================[MACHIN3.PUNCHit]=================
+    machin3_punchit_push_default: IntProperty(name="Push Default Value", description="Pushing means widening the Extrusion a tiny bit. \nThis helps with Precision Issues in Polygonal Meshes\nSet to 0 to attempt Extrusions without changing the Shape at all.", default=1, min=0)
+    machin3_punchit_pull_default: IntProperty(name="Push Default Value", description="Pulling means receding the initially selected faces a tiny bit. \nThis helps with Precision Issues in Polygonal Meshes", default=1, min=0)
+    machin3_punchit_non_manifold_extrude: BoolProperty(name="Support non-manifold meshes", description="Allow Extruding on non-manifold meshes", default=False)
+    machin3_punchit_show_sidebar_panel: BoolProperty(name="Show Sidebar Panel", description="Show PUNCHit Panel in 3D View's Sidebar", default=True)
+    machin3_punchit_modal_hud_scale: FloatProperty(name="HUD Scale", description="Scale of HUD elements", default=1, min=0.1)
+    machin3_punchit_modal_hud_timeout: FloatProperty(name="HUD Timeout", description="Modulate duration of fading HUD elements", default=1, min=0.1, max=10)
 #============[Prefs UI]=============
     def draw(self, context):
         layout = self.layout

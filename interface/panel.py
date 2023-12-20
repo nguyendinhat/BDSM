@@ -257,15 +257,15 @@ class VIEW3D_PT_BDSM_PANEL(Panel):
                 row.label(text='Edit Face:', icon='FACESEL')
 
                 row = col.row(align=True)
-                split = box.split(align=True)
+                split = box.split(align=True, factor=0.43)
                 col = split.column(align=True)
                 grid = col.grid_flow(columns=1, align=True)
                 grid.operator('mesh.bdsm_mesh_extrude', text='Extrude', icon_value=get_icon_id("Extrude"))
 
                 col = split.column(align=True)
-                grid = col.grid_flow(columns=4, align=True)
+                grid = col.grid_flow(columns=5, align=True)
+                grid.operator('mesh.bdsm_mesh_extrude_punchit', text='', icon_value=get_icon_id("PUNCHit"))
                 grid.prop(props, 'extrude_mode', icon_only=True, expand=True, toggle=True)
-
 
                 col = box.column(align=True)
                 row = col.row(align=True)

@@ -2,20 +2,42 @@ import bpy
 import rna_keymap_ui
 
 def prefs_ui(self, layout):
-    
+    #todo: F2
     box = layout.box()
     col = box.column(align=True)
     col.label(text='Mesh F2:')
+    col = box.column(align=True)
+    split = col.split()
+    col = split.column(align=True)
     col.prop(self, 'f2_autograb')
     col.prop(self, 'f2_adjustuv')
     col.prop(self, 'f2_extendvert')
-    col = box.column(align=True)
+    col = split.column(align=True)
     col.label(text='use active material when creating:')
     col.prop(self, 'f2_quad_from_e_mat')
     col.prop(self, 'f2_quad_from_v_mat')
     col.prop(self, 'f2_tris_from_v_mat')
     col.prop(self, 'f2_ngons_v_mat')
-    
+    #todo: MACHIN3 - PUNCHit
+    box = layout.box()
+    col = box.column(align=True)
+    col.label(text='MACHIN3 - PUNCHit:')
+    col = box.column(align=True)
+    split = col.split()
+    col = split.column(align=True)
+    col.label(text='General:')
+    col.prop(self, 'machin3_punchit_push_default', text='Push Default Value')
+    col.prop(self, 'machin3_punchit_pull_default', text='Pull Default Value')
+    col.prop(self, 'machin3_punchit_non_manifold_extrude', text='Support non-manifold meshes')
+    split = col.split()
+    col = split.column(align=True)
+    col.label(text='View 3D:')
+    col.prop(self, 'machin3_punchit_show_sidebar_panel', text='Show Sidebar Pane')
+    col.label(text='HUD:')
+    col.prop(self, 'machin3_punchit_modal_hud_scale', text='Modal HUD scale')
+    col.prop(self, 'machin3_punchit_modal_hud_timeout', text='Modal HUD Timeout')
+
+    #todo: Shortcut
     box = layout.box()
     col = box.column(align=True)
     col.scale_y = 1.2
@@ -65,9 +87,6 @@ def prefs_ui(self, layout):
                         row = col.row()
                         col.context_pointer_set('keymap', k)
                         rna_keymap_ui.draw_kmi([], kc, k, i, row, 0)
-
-
-
 
 def find_conflict(skm, i):
     ku = bpy.context.window_manager.keyconfigs.user
