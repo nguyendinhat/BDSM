@@ -120,6 +120,7 @@ CLASSES = [
     op_mesh_select_error.BDSM_Mesh_Select_Vert_Counter,
 
     op_object_select_lock.BDSM_Object_Select_Lock,
+    Primitive.primitive_box_add.BDSM_Mesh_PrimitiveBoxAdd,
     op_object_collision.BDSM_Object_Collision,
     op_object_collision.BDSM_Object_BBox_Match,
     op_object_drop_it.BDSM_Object_Drop_It,
@@ -155,7 +156,6 @@ modules = [
     shortcut,
     icons,
     ModifierTool,
-    Primitive
 ]
 
 
@@ -177,26 +177,22 @@ Addons = [
 
 
 def register():
-    for module in modules:
-        module.register()
-
     for cls in CLASSES:
         bpy.utils.register_class(cls)
 
     bpy.types.WindowManager.BDSM_Context = bpy.props.PointerProperty(type=context.BDSM_Context)
-    
+    for module in modules:
+        module.register()
 
 
 
 def unregister():
-    
+    for module in reversed(modules):
+        module.unregister()
 
     del bpy.types.WindowManager.BDSM_Context
     for cls in reversed(CLASSES):
         bpy.utils.unregister_class(cls)
-    
-    for module in reversed(modules):
-            module.unregister()
 
 
 if __name__ == '__main__':
