@@ -505,6 +505,9 @@ class VIEW3D_PT_BDSM_PANEL(Panel):
                         row = col.row(align=True)
                         row.operator('mesh.bdsm_mesh_face_cut', text='Face Cut',icon_value=get_icon_id('FaceCut'))
                         row.operator('mesh.bdsm_mesh_face_fix_ngons', text='Fix N-Gons', icon_value=get_icon_id('ShowNgonsTris'))
+                        row = col.row(align=True)
+                        row.operator('mesh.bdsm_mesh_face_regulator', text='Face Regulator', icon='VIEW_ORTHO')
+                        
                     row = col.row(align=True)
                     row.operator('view3d.bdsm_duplicate', text='Duplicate', icon_value=get_icon_id('Duplicate'))
                     row.operator('mesh.bdsm_detach', text='Detach', icon_value=get_icon_id('Detach'))

@@ -18,5 +18,3 @@ def unregister():
     for c in classes:
         bpy.utils.unregister_class(c)
     bpy.types.VIEW3D_MT_edit_mesh_extrude.remove(extrude_menu)
-
-
