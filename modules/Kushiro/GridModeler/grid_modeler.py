@@ -3281,6 +3281,8 @@ class GridModelerOperator(bpy.types.Operator):
 
 
     def create_bevel2(self, front, back, p2):
+        cut = self.create_edge_bevel
+        dis = self.create_edge_bevel_dis
         e1 = [(b-a).normalized() for a, b in zip(p2, front)]
         e2 = [(b-a).normalized() for a, b in zip(p2, back)]        
         vn = [dis * ((a+b)/2).normalized() for a, b in zip(e1, e2)]
