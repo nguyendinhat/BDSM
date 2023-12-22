@@ -18,7 +18,7 @@ def prefs_ui(self, layout):
     col.prop(self, 'f2_quad_from_v_mat')
     col.prop(self, 'f2_tris_from_v_mat')
     col.prop(self, 'f2_ngons_v_mat')
-    #todo: MACHIN3 - PUNCHit
+    #todo: MACHIN3.PUNCHit
     box = layout.box()
     col = box.column(align=True)
     col.label(text='MACHIN3 - PUNCHit:')
@@ -36,6 +36,33 @@ def prefs_ui(self, layout):
     col.label(text='HUD:')
     col.prop(self, 'machin3_punchit_modal_hud_scale', text='Modal HUD scale')
     col.prop(self, 'machin3_punchit_modal_hud_timeout', text='Modal HUD Timeout')
+    
+    #todo: Kushiro.GridModeler
+    box = layout.box()
+    col = box.column(align=True)
+    col.label(text='Kushiro / Grid Modeler:')
+    col = box.column(align=True)
+    col.label(text='Text size for hints (left bottom)')
+    row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_textsize')
+    row.prop(self, 'kushiro_gridmodeler_textcolor')
+    col.label(text='Default operation mode')
+    row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_default_operation_mode', expand=True)
+    col.label(text='Default grid size mode')
+    row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_bool_abs' )
+    col.label(text='Show pressed key on the screen')
+    row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_bool_showkey' )
+    col.label(text='Text X position')
+    row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_text_pos_x')
+    col.label(text='Colors Setting : ')
+    row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_line_color')
+    row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_shape_color')
 
     #todo: Shortcut
     box = layout.box()

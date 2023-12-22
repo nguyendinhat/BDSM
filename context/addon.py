@@ -4,8 +4,8 @@ from bpy.types import AddonPreferences
 from .. context import items
 from .. interface.preferences import prefs_ui
 
-from .. modules.MACHIN3.PUNCHit.utils.registration import get_path as machin3_punchit_get_path
-
+from .. modules.Machin3.PUNCHit.utils.registration import get_path as machin3_punchit_get_path
+from .. modules.Kushiro.GridModeler import pref
 class BDSM_AddonPreferences(AddonPreferences):
     bl_idname = 'BDSM'
     bl_options = {'REGISTER', 'UNDO_GROUPED'}
@@ -228,6 +228,56 @@ class BDSM_AddonPreferences(AddonPreferences):
     machin3_punchit_show_sidebar_panel: BoolProperty(name="Show Sidebar Panel", description="Show PUNCHit Panel in 3D View's Sidebar", default=True)
     machin3_punchit_modal_hud_scale: FloatProperty(name="HUD Scale", description="Scale of HUD elements", default=1, min=0.1)
     machin3_punchit_modal_hud_timeout: FloatProperty(name="HUD Timeout", description="Modulate duration of fading HUD elements", default=1, min=0.1, max=10)
+#============[Kushiro.GridModeler]=============
+    kushiro_gridmodeler_textsize: IntProperty(
+        name='Text Size',
+        default=24,
+    )
+    kushiro_gridmodeler_textcolor: FloatVectorProperty(
+        name='Text Color',
+        subtype='COLOR',
+        size=4,
+        default=(0.88, 0.92, 0.96, 0.8),
+        description='Text Color'
+        )
+    kushiro_gridmodeler_text_pos_x: IntProperty(
+        name='Text X position',
+        default=120,
+    )
+    kushiro_gridmodeler_default_operation_mode : EnumProperty(
+                #(identifier, name, description, icon, number)
+        items = [('triangles','Triangles','','',0),
+                 ('ngon','N-gon','','',1),
+                 ('newface','Create face','','',2),
+                 ('boolcut','Boolean Cut','','',3),
+                 ],
+        name = 'Default Operation Mode',
+        default = 'boolcut')
+    kushiro_gridmodeler_bool_abs: BoolProperty(
+        name='Use Absolute Mode',
+        description='Default grid size mode',
+        default=True
+    )
+    kushiro_gridmodeler_bool_showkey: BoolProperty(
+        name='Show pressed key on the screen',
+        description='Show pressed key on the screen (for video recording)',
+        default=False
+    )
+    kushiro_gridmodeler_line_color: FloatVectorProperty(
+        name='Grid Line Color',
+        subtype='COLOR',
+        size=4,
+        default=(0.02, 0.82, 0.85, 0.7),
+        description='Grid Line Color'
+        )
+    kushiro_gridmodeler_shape_color: FloatVectorProperty(
+        name='Shape Line Color',
+        subtype='COLOR',
+        size=4,
+        default=(0.02, 0.82, 0.85, 1),
+        min=0.0, max=1.0,
+        description='Shape Line Color'
+        )
 #============[Prefs UI]=============
     def draw(self, context):
         layout = self.layout
