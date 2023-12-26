@@ -2,24 +2,25 @@ import bpy
 from bpy.types import Operator
 from bpy.props import FloatProperty, BoolProperty, EnumProperty, IntProperty, StringProperty
 from bpy_extras.view3d_utils import region_2d_to_origin_3d, region_2d_to_vector_3d
-from typing import Set, Tuple, Union
+from typing import Set,  Union
 import bmesh
 from mathutils import Vector
 from mathutils.geometry import intersect_line_line, intersect_point_line
 from math import sqrt
-from .. utils.selection import get_selection_islands, get_boundary_edges, get_edges_vert_sequences, get_selected_vert_sequences
-from .. utils.property import rotate_list, shorten_float_string
-from .. utils.math import average_normals, average_locations, get_center_between_verts, dynamic_format
-from .. utils.system import printd
-from .. utils.draw import draw_vector, draw_point, draw_line, draw_tris, draw_label, draw_init, draw_lines
-from .. utils.bmesh import get_loop_triangles
-from .. utils.ui import navigation_passthrough, init_status, finish_status, force_ui_update, get_mouse_pos, ignore_events
-from .. utils.snap import Snap
-from .. utils.registration import get_prefs
-from .. utils.raycast import cast_bvh_ray_from_point
-from .. utils.graph import get_shortest_path
-from .. colors import green, red, blue, yellow, white, normal, orange
-from .. items import extrude_mode_items, ctrl, numbers, input_mappings
+from ..utils.selection import get_selection_islands, get_boundary_edges, get_edges_vert_sequences, get_selected_vert_sequences
+from ..utils.property import rotate_list, shorten_float_string
+from ..utils.math import average_normals, average_locations, get_center_between_verts, dynamic_format
+from ..utils.system import printd
+from ....interface.draw import draw_vector, draw_point, draw_line, draw_tris, draw_lines
+from ....interface.hud import draw_title,draw_prop, draw_init, init_status, finish_status, get_mouse_pos, init_cursor
+from ..utils.bmesh import get_loop_triangles
+from ....utils.event import navigation_passthrough,  force_ui_update, ignore_events
+from ..utils.snap import Snap
+from ..utils.registration import get_prefs
+from ..utils.raycast import cast_bvh_ray_from_point
+from ..utils.graph import get_shortest_path
+from ....interface.colors import green, red, blue, yellow, white, normal, orange
+from ..context.items import extrude_mode_items, ctrl, numbers, input_mappings
 
 
 def draw_punchit_status(op):
@@ -28,141 +29,129 @@ def draw_punchit_status(op):
 
         row = layout.row(align=True)
 
-        text = "Punch It"
+        text = 'Punch It'
         row.label(text=text)
 
         if not op.finalizing:
             if op.is_numeric_input:
-                row.label(text="", icon='EVENT_RETURN')
-                row.label(text="Finalize")
+                row.label(text='', icon='EVENT_RETURN')
+                row.label(text='Finalize')
 
-                row.label(text="", icon='MOUSE_MMB_DRAG')
-                row.label(text="Navigation")
+                row.label(text='', icon='MOUSE_MMB_DRAG')
+                row.label(text='Navigation')
 
-                row.label(text="", icon='EVENT_ESC')
-                row.label(text="Cancel")
+                row.label(text='', icon='EVENT_ESC')
+                row.label(text='Cancel')
 
-                row.label(text="", icon='EVENT_TAB')
-                row.label(text="Abort Numeric Input")
+                row.label(text='', icon='EVENT_TAB')
+                row.label(text='Abort Numeric Input')
 
                 row.separator(factor=10)
 
-                row.label(text="Numeric Input...")
+                row.label(text='Numeric Input...')
 
             else:
 
-                row.label(text="", icon='MOUSE_LMB')
-                row.label(text="Finalize")
+                row.label(text='', icon='MOUSE_LMB')
+                row.label(text='Finalize')
 
-                row.label(text="", icon='MOUSE_MMB_DRAG')
-                row.label(text="Navigation")
+                row.label(text='', icon='MOUSE_MMB_DRAG')
+                row.label(text='Navigation')
 
-                row.label(text="", icon='MOUSE_RMB')
-                row.label(text="Cancel")
+                row.label(text='', icon='MOUSE_RMB')
+                row.label(text='Cancel')
 
-                row.label(text="", icon='EVENT_TAB')
-                row.label(text="Enter Numeric Input")
+                row.label(text='', icon='EVENT_TAB')
+                row.label(text='Enter Numeric Input')
 
                 row.separator(factor=10)
 
-                row.label(text="", icon='MOUSE_MOVE')
-                row.label(text="Set Amount")
+                row.label(text='', icon='MOUSE_MOVE')
+                row.label(text='Set Amount')
 
                 row.separator(factor=2)
 
-                row.label(text=f"Extrusion Mode:")
+                row.label(text=f'Extrusion Mode:')
 
                 row.separator(factor=1)
 
-                row.label(text="", icon='EVENT_A')
-                row.label(text=f"Averaged")
+                row.label(text='', icon='EVENT_A')
+                row.label(text=f'Averaged')
 
                 row.separator(factor=1)
 
-                row.label(text="", icon='EVENT_E')
-                row.label(text=f"Edge")
+                row.label(text='', icon='EVENT_E')
+                row.label(text=f'Edge')
 
                 row.separator(factor=1)
 
-                row.label(text="", icon='EVENT_N')
-                row.label(text=f"Normal")
+                row.label(text='', icon='EVENT_N')
+                row.label(text=f'Normal')
 
                 row.separator(factor=2)
 
-                row.label(text="", icon='EVENT_R')
-                row.label(text="Reset Amount")
+                row.label(text='', icon='EVENT_R')
+                row.label(text='Reset Amount')
 
         else:
-            row.label(text="", icon='MOUSE_LMB')
-            row.label(text="Finish")
+            row.label(text='', icon='MOUSE_LMB')
+            row.label(text='Finish')
 
-            row.label(text="", icon='MOUSE_MMB_DRAG')
-            row.label(text="Navigation")
+            row.label(text='', icon='MOUSE_MMB_DRAG')
+            row.label(text='Navigation')
 
-            row.label(text="", icon='MOUSE_RMB')
-            row.label(text="Go Back")
+            row.label(text='', icon='MOUSE_RMB')
+            row.label(text='Go Back')
 
             row.separator(factor=10)
-            row.label(text="", icon='EVENT_S')
-            row.label(text=f"Self-Boolean: {op.self_boolean}")
+            row.label(text='', icon='EVENT_S')
+            row.label(text=f'Self-Boolean: {op.self_boolean}')
 
             row.separator(factor=2)
 
-            row.label(text="", icon='EVENT_A')
-            row.label(text=f"Auto Mesh Cleanup: {op.auto_cleanup}")
+            row.label(text='', icon='EVENT_A')
+            row.label(text=f'Auto Mesh Cleanup: {op.auto_cleanup}')
 
             row.separator(factor=2)
 
-            row.label(text="", icon='EVENT_W')
-            row.label(text=f"Push and Pull")
+            row.label(text='', icon='EVENT_W')
+            row.label(text=f'Push and Pull')
 
             row.separator(factor=2)
 
-            row.label(text="", icon='EVENT_Q')
-            row.label(text=f"Just Pull")
+            row.label(text='', icon='EVENT_Q')
+            row.label(text=f'Just Pull')
 
             row.separator(factor=2)
 
-            row.label(text="", icon='EVENT_E')
-            row.label(text=f"Just Push")
+            row.label(text='', icon='EVENT_E')
+            row.label(text=f'Just Push')
 
             row.separator(factor=2)
 
-            row.label(text="", icon='EVENT_R')
-            row.label(text=f"Reset Push/Pull")
+            row.label(text='', icon='EVENT_R')
+            row.label(text=f'Reset Push/Pull')
 
             row.separator(factor=2)
-
-            row.label(text="", icon='EVENT_SHIFT')
-            row.label(text=f"Invert Push/Pull")
-
-            row.separator(factor=2)
-
-            row.label(text="", icon='EVENT_CTRL')
-            row.label(text=f"Push/Pull x 100")
-
-
     return draw
 
 class BDSM_Mesh_Extrude_PunchIt(Operator):
-    bl_idname = "mesh.bdsm_mesh_extrude_punchit"
-    bl_label = "BDSM Mesh Extrude Punch It"
-    bl_description = "BDSM Mesh Extrude Punch It\n"\
-                    "Manifold Extruding that works"
+    bl_idname = 'mesh.bdsm_mesh_extrude_punchit'
+    bl_label = 'BDSM Mesh Extrude Punch It'
+    bl_description = 'BDSM Mesh Extrude Punch It\n'\
+                    'Manifold Extruding that works'
     bl_options = {'REGISTER', 'UNDO'}
 
-    use_self: BoolProperty(name="Use Self Intersection", description="Magically fix issues (slower)\nDisabled you'll often need bigger Push and Pull values (faster)", default=True)
-    self_boolean: BoolProperty(name="Use Self Intersection", description="Magically fix issues (slower)\nIf disabled, you'll often need bigger Push and Pull values (faster)", default=True)
-    mode: EnumProperty(name="Mode", items=extrude_mode_items, default='AVERAGED')
-
-    amount: FloatProperty(name="Amount", description="Extrusion Depth", default=0.4, min=0, precision=4, step=0.1)
-
+    use_self: BoolProperty(name='Use Self Intersection', description='Magically fix issues (slower)\nDisabled you ll often need bigger Push and Pull values (faster)', default=True)
+    self_boolean: BoolProperty(name='Use Self Intersection', description='Magically fix issues (slower)\nIf disabled, you ll often need bigger Push and Pull values (faster)', default=True)
+    mode: EnumProperty(name='Mode', items=extrude_mode_items, default='AVERAGED')
+    amount: FloatProperty(name='Amount', description='Extrusion Depth', default=0.4, min=0, precision=5, step=0.1)
     is_numeric_input: BoolProperty()
     is_numeric_input_marked: BoolProperty()
-    numeric_input_amount: StringProperty(name="Numeric Amount to Move Face", description="Amount to Move the Face Selection by", default='0')
-    pushed: IntProperty(name="Pushed", description="Push Side Faces out", default=0)
-    pulled: IntProperty(name="Pulled", description="Pull Front Face back", default=0)
-    auto_cleanup: BoolProperty(name="Auto-Cleanup", description="Run an automatic mesh cleanup at the end", default=True)
+    numeric_input_amount: StringProperty(name='Numeric Amount to Move Face', description='Amount to Move the Face Selection by', default='0')
+    pushed: IntProperty(name='Pushed', description='Push Side Faces out', default=0)
+    pulled: IntProperty(name='Pulled', description='Pull Front Face back', default=0)
+    auto_cleanup: BoolProperty(name='Auto-Cleanup', description='Run an automatic mesh cleanup at the end', default=True)
     passthrough = False
 
     @classmethod
@@ -183,94 +172,58 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
         row.prop(self, 'amount', expand=True)
 
         r = row.row(align=True)
-        r.prop(self, 'pushed', text="Push", expand=True)
-        r.prop(self, 'pulled', text="Pull", expand=True)
+        r.prop(self, 'pushed', text='Push', expand=True)
+        r.prop(self, 'pulled', text='Pull', expand=True)
 
     def draw_HUD(self, context):
         if context.area == self.area:
-
             draw_init(self)
-
             if self.finalizing:
-                dims = draw_label(context, title=f"Finalizing ", coords=Vector((self.HUD_x, self.HUD_y)), center=False, color=white, alpha=1)
-
-                if self.self_boolean:
-                    draw_label(context, title="self-boolean", coords=Vector((self.HUD_x + dims[0], self.HUD_y)), center=False, color=white, alpha=0.5)
-
-                self.offset += 18
-                dims = draw_label(context, title=f"Pushed: {self.pushed}  ", coords=Vector((self.HUD_x, self.HUD_y)), offset=self.offset, center=False, color=blue, alpha=0.75)
-                draw_label(context, title=f"Pulled: {self.pulled}", coords=Vector((self.HUD_x + dims[0], self.HUD_y)), offset=self.offset, center=False, color=green, alpha=0.75)
-
-
-                if self.auto_cleanup:
-                    self.offset += 18
-                    dims = draw_label(context, title=f"Auto-Cleanup ", coords=Vector((self.HUD_x, self.HUD_y)), offset=self.offset, center=False, color=red, alpha=1)
-
-                    if self.cleaned_up:
-                        draw_label(context, title=f"{self.cleaned_up} Verts Removed ✔️", coords=Vector((self.HUD_x + dims[0], self.HUD_y)), offset=self.offset, center=False, size=10, color=white, alpha=1)
-
-                    else:
-                        draw_label(context, title=f"Nothing", coords=Vector((self.HUD_x + dims[0], self.HUD_y)), offset=self.offset, center=False, size=10, color=white, alpha=0.5)
-
-                elif self.is_mesh_non_manifold:
-                    self.offset += 18
-                    draw_label(context, title=f"Non-manifold meshes tend to require higher", coords=Vector((self.HUD_x, self.HUD_y)), offset=self.offset, center=False, color=orange, alpha=1)
-
-                    self.offset += 18
-                    draw_label(context, title=f"values with Auto-Cleanup disabled", coords=Vector((self.HUD_x, self.HUD_y)), offset=self.offset, center=False, color=orange, alpha=1)
-
-
+                draw_title(self, 'Punchit', subtitle='Finalizing')
+                draw_prop(self, 'Push', self.pushed, hint='up E')
+                draw_prop(self, 'Pull', self.pulled, offset=18, hint='up W')
+                draw_prop(self, 'self-boolean', self.self_boolean, offset=18, hint='toggle S')
+                draw_prop(self, 'auto_cleanup', self.auto_cleanup, offset=18, hint='toggle A,C')
+                draw_prop(self, 'Vertex Remove', self.cleaned_up, offset=18, hint='Go back ESC, Right')
+                draw_prop(self, 'Manifold', self.is_mesh_non_manifold, offset=18, hint='Go back ESC, Right')
             else:
-
-                dims = draw_label(context, title='Punch ', coords=Vector((self.HUD_x, self.HUD_y)), center=False, color=white, alpha=1)
-                dims2 = draw_label(context, title='along ', coords=Vector((self.HUD_x + dims[0], self.HUD_y)), center=False, size=10, color=white, alpha=0.5)
-
+                draw_title(self, 'Punchit', subtitle='self-boolean')
                 if self.mode == 'EDGE':
-                    draw_label(context, title='Edge', coords=Vector((self.HUD_x + dims[0] + dims2[0], self.HUD_y)), center=False, color=yellow, alpha=1)
-
-                elif self.mode in ['AVERAGED', 'NORMAL']:
+                    draw_prop(self, 'Mode', 'Edge', value_color=yellow, hint_offset=220, hint='Switch Mode A,E,I,X,^')
+                elif self.mode in ['AVERAGED', 'INDIVIDUAL']:
                     if self.mode == 'AVERAGED':
-                        dims3 = draw_label(context, title='Averaged ', coords=Vector((self.HUD_x + dims[0] + dims2[0], self.HUD_y)), center=False, color=blue, alpha=1)
-
+                        draw_prop(self, 'Mode', 'Averaged', value_color=blue, hint_offset=220, hint='Switch Mode A,E,I,X,^')
                     else:
-                        dims3 = draw_label(context, title='Individual ', coords=Vector((self.HUD_x + dims[0] + dims2[0], self.HUD_y)), center=False, color=normal, alpha=1)
+                        draw_prop(self, 'Mode', 'Individual', value_color=normal, hint_offset=220, hint='Switch Mode A,E,I,X,^')
 
-                    draw_label(context, title='Normals', coords=Vector((self.HUD_x + dims[0] + dims2[0] + dims3[0], self.HUD_y)), center=False, color=white, alpha=0.5)
-
-
-
-
-                self.offset += 18
-                dims = draw_label(context, title="Amount:", coords=Vector((self.HUD_x, self.HUD_y)), offset=self.offset, center=False, color=white, alpha=0.5)
-      
-                title = "🖩" if self.is_numeric_input else " "
-                dims2 = draw_label(context, title=title, coords=Vector((self.HUD_x + dims[0], self.HUD_y)), offset=self.offset + 3, center=False, size=20, color=green, alpha=0.5)
-      
                 if self.is_numeric_input:
-                    dims3 = draw_label(context, title=self.numeric_input_amount, coords=Vector((self.HUD_x + dims[0] + dims2[0], self.HUD_y)), offset=self.offset, center=False, color=green, alpha=1)
-
+                    dims3 = draw_prop(self, 'Amount input', self.numeric_input_amount, value_color=green, decimal=5, offset=18,hint_offset=220, hint='')
                     if self.is_numeric_input_marked:
                         scale = context.preferences.system.ui_scale * get_prefs().machin3_punchit_modal_hud_scale
-                        coords = [Vector((self.HUD_x + dims[0] + dims2[0], self.HUD_y - (self.offset - 5) * scale, 0)), Vector((self.HUD_x + dims[0] + dims2[0] + dims3[0], self.HUD_y - (self.offset - 5) * scale, 0))]
+                        coords = [
+                            Vector(
+                                (self.HUD_x - 7 + int(125 * scale) - 5,
+                                 self.HUD_y  - (self.offset - 3) * scale, 0
+                                )),
+                            Vector(
+                                (self.HUD_x - 7 + int(125 * scale) + dims3[0],
+                                 self.HUD_y  - (self.offset - 3) * scale, 0
+                                ))
+                        ]
                         draw_line(coords, width=12 + 8 * scale, color=green, alpha=0.1, screen=True)
-
+                        draw_prop(self, '', '', offset=18, hint_offset=220, hint='Exit input Tab')
+                        draw_prop(self, '', '', offset=18, hint_offset=220, hint='Finalize Enter')
+                        draw_prop(self, '', '', offset=18, hint_offset=220, hint='Cancel ESC, RIGHT')
                 else:
-                    draw_label(context, title=dynamic_format(self.amount, decimal_offset=1), coords=Vector((self.HUD_x + dims[0] + dims2[0], self.HUD_y)), offset=self.offset, center=False, color=white, alpha=1)
-
-
-
-                if self.pick_edge_dir:
-                    self.offset += 18
+                    draw_prop(self, 'Amount', self.amount,decimal=5, offset=18,hint_offset=220, hint='Input Tab, Reset R')
+                if self.pick_edge_dir or self.mode == 'EDGE':
                     edge_dir = self.data['edge_dir']
-
                     if self.edge_coords and edge_dir:
-                        draw_label(context, title='valid', coords=Vector((self.HUD_x, self.HUD_y)), offset=self.offset, center=False, color=yellow, alpha=1)
-
+                        draw_prop(self, 'Edge Picker','CORRECT', value_color=green, offset=18,hint_offset=220)
                     elif self.edge_coords:
-                        draw_label(context, title='invalid', coords=Vector((self.HUD_x, self.HUD_y)), offset=self.offset, center=False, color=red, alpha=1)
-
+                        draw_prop(self, 'Edge Picker','invalid', value_color=red, offset=18,hint_offset=220)
                     else:
-                        draw_label(context, title='none', coords=Vector((self.HUD_x, self.HUD_y)), offset=self.offset, center=False, color=red, alpha=1)
+                        draw_prop(self, 'Edge Picker', 'none', value_color=red, offset=18,hint_offset=220)
 
     def draw_VIEW3D(self, context):
         if context.area == self.area:
@@ -383,8 +336,8 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
             if not context.region_data:
                 return self.execute(context)
 
-            get_mouse_pos(self, context, event)
-
+            # get_mouse_pos(self, context, event, hud_offset=(0, 20))
+            init_cursor(self,event)
 
             self.amount = 0
             self.setup_extrusion_direction(context, 'AVERAGED')
@@ -502,7 +455,7 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
 
         self.mode = direction
 
-        if direction in ['AVERAGED', 'NORMAL']:
+        if direction in ['AVERAGED', 'INDIVIDUAL']:
 
             self.amount_origin = self.mx @ self.data['avg_co']
             self.amount_dir = self.mx.to_3x3() @ self.data['avg_dir']
@@ -520,7 +473,7 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
         self.get_exit_coords(direction=direction)
 
     def set_extrusion_amount(self, context, interactive=True):
-
+        #FIXME: Extrude up problem
         if interactive:
             amount_vector = (self.loc - self.init_loc)
             self.amount = amount_vector.length if amount_vector.dot(self.amount_dir) > 0 else 0
@@ -532,7 +485,7 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
                     vdata['co'] = vdata['init_co'] + self.data['avg_dir'] * self.amount
                 elif self.mode == 'EDGE':
                     vdata['co'] = vdata['init_co'] + self.data['edge_dir'] * self.amount
-                elif self.mode == 'NORMAL':
+                elif self.mode == 'INDIVIDUAL':
                     vdata['co'] = vdata['init_co'] + vdata['vert_dir'] * self.amount
 
         else:
@@ -583,7 +536,7 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
         self.is_mesh_non_manifold = not all(e.is_manifold for e in bm.edges)
 
         if self.is_mesh_non_manifold and not get_prefs().machin3_punchit_non_manifold_extrude:
-            bpy.ops.wm.bdsm_draw_label_punchit(text='Mesh is non-manifold!', text2='Try enabling non-manifold mesh support in the addon preferences', coords=coords, color=red, color2=yellow, color3=white, alpha=1, alpha2=0.8, time=3)
+            bpy.ops.wm.bdsm_draw_label_punchit(text='Mesh is non-manifold!', text2='Try enabling non-manifold mesh support in the addon preferences', coords=coords, color=red, color2=yellow, color3=white, alpha=1, alpha2=0.8, time=0.05)
             return
 
         faces = [f for f in bm.faces if f.select]
@@ -632,23 +585,23 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
                     if vert_mode:
                         bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
 
-                    bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2='You need to select at least one edge', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=3)
+                    bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2='You need to select at least one edge', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=0.05)
                     return
 
             else:
-                bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2='Make a Selection, will ya...', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=3)
+                bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2='Make a Selection, will ya...', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=0.05)
                 return
 
         islands = get_selection_islands(faces, debug=debug)
 
         if not islands:
-            bpy.ops.wm.bdsm_draw_label_punchit(text='Pay attention, numbnuts!', text2='Uh, try to select a face, maybe. Or an edge at least.', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=3)
+            bpy.ops.wm.bdsm_draw_label_punchit(text='Pay attention, numbnuts!', text2='Uh, try to select a face, maybe. Or an edge at least.', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=0.05)
             return
 
         faces = max(islands, key=lambda x: len(x[2]))[2]
 
         if set(faces) == {f for f in bm.faces}:
-            bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2="Let's think this through. You want to select all the faces? At the same time?", coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=3)
+            bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2='Lets think this through. You want to select all the faces? At the same time?', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=0.05)
             return
 
         loop_triangles = get_loop_triangles(bm, faces=faces)
@@ -661,7 +614,7 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
         has_non_manifold_verts = any(any(not e.is_manifold for e in v.link_edges) for v in boundary_verts)
 
         if has_non_manifold_verts:
-            bpy.ops.wm.bdsm_draw_label_punchit(text='Selection is next to non-manifold edges!', text2='Fix your shit 💩', text3='No soup for you', coords=coords, color=red, color2=yellow, color3=white, alpha=1, alpha2=0.5, alpha3=0.5, time=3)
+            bpy.ops.wm.bdsm_draw_label_punchit(text='Selection is next to non-manifold edges!', text2='Fix your shit 💩', text3='No soup for you', coords=coords, color=red, color2=yellow, color3=white, alpha=1, alpha2=0.5, alpha3=0.5, time=0.05)
             return
 
         inner_verts = [v for v in verts if v not in boundary_verts]
@@ -669,7 +622,7 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
         sequences = get_edges_vert_sequences(boundary_verts, boundary, debug=debug)
 
         if len(sequences) > 1:
-            bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2="Face Selection can't be cyclic 🚴 ", coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=3)
+            bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2='Face Selection cant be cyclic 🚴 ', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=0.05)
             return
 
         sorted_boundary_verts = sequences[0][0]
@@ -688,9 +641,9 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
 
         if debug:
             print()
-            print("faces:", [f.index for f in faces])
-            print("sorted boundary verts:", [v.index for v in sorted_boundary_verts])
-            print("inner verts:", [v.index for v in inner_verts])
+            print('faces:', [f.index for f in faces])
+            print('sorted boundary verts:', [v.index for v in sorted_boundary_verts])
+            print('inner verts:', [v.index for v in inner_verts])
 
         return faces, loop_triangles, sorted_boundary_verts, inner_verts
 
@@ -949,41 +902,26 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
     def numeric_input(self, context, event) -> Union[Set[str], None]:
 
         if not self.finalizing:
-
-            
-            if event.type == "TAB" and event.value == 'PRESS':
+            if event.type == 'TAB' and event.value == 'PRESS':
                 self.is_numeric_input = not self.is_numeric_input
-
                 force_ui_update(context)
-
                 if self.is_numeric_input:
-                    self.numeric_input_amount = str(self.amount)
+                    self.numeric_input_amount = str(round(float(self.amount),5))
                     self.is_numeric_input_marked = True
-
                 else:
                     return
-
-
-
             if self.is_numeric_input:
                 events = [*numbers, 'BACK_SPACE', 'DELETE', 'PERIOD', 'COMMA', 'NUMPAD_PERIOD', 'NUMPAD_COMMA']
-
                 if event.type in events and event.value == 'PRESS':
-
                     if self.is_numeric_input_marked:
                         self.is_numeric_input_marked = False
-
                         if event.type == 'BACK_SPACE':
-
                             if event.alt:
                                 self.numeric_input_amount = self.numeric_input_amount[:-1]
-
                             else:
                                 self.numeric_input_amount = shorten_float_string(self.numeric_input_amount, 4)
-
                         else:
                             self.numeric_input_amount = input_mappings[event.type]
-
                     else:
                         if event.type in numbers:
                             self.numeric_input_amount += input_mappings[event.type]
@@ -993,23 +931,14 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
 
                         elif event.type in ['COMMA', 'PERIOD', 'NUMPAD_COMMA', 'NUMPAD_PERIOD'] and '.' not in self.numeric_input_amount:
                             self.numeric_input_amount += '.'
-
-
-
                     try:
                         self.amount = float(self.numeric_input_amount)
-
                     except:
                         return {'RUNNING_MODAL'}
 
                     self.set_extrusion_amount(context, interactive=False)
-
-
-
                 elif navigation_passthrough(event, alt=True, wheel=True):
                     return {'PASS_THROUGH'}
-
-
 
                 elif event.type in {'RET', 'NUMPAD_ENTER'}:
                     self.set_push_and_pull_amount(context)
@@ -1038,7 +967,8 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
     def interactive_input(self, context, event) -> Set[str]:
 
         if event.type == 'MOUSEMOVE':
-            get_mouse_pos(self, context, event)
+            init_cursor(self,event)
+            # get_mouse_pos(self, context, event)
 
 
             if self.passthrough:
@@ -1050,7 +980,7 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
 
 
         if not self.finalizing:
-            events = ['MOUSEMOVE', 'A', 'E', *ctrl, 'N', 'X', 'R']
+            events = ['MOUSEMOVE', 'A', 'E', *ctrl, 'I', 'X', 'R']
 
             if event.type in events:
 
@@ -1075,8 +1005,8 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
                     self.setup_extrusion_direction(context, direction='AVERAGED')
                     self.set_extrusion_amount(context)
 
-                elif event.type in ['X', 'N'] and event.value == 'PRESS':
-                    self.setup_extrusion_direction(context, direction='NORMAL')
+                elif event.type in ['X', 'I'] and event.value == 'PRESS':
+                    self.setup_extrusion_direction(context, direction='INDIVIDUAL')
                     self.set_extrusion_amount(context)
 
                 elif event.type == 'R' and event.value == 'PRESS':
@@ -1216,15 +1146,15 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
 
         loose_verts = [v for v in bm.verts if not v.link_edges]
         if loose_verts:
-            bmesh.ops.delete(bm, geom=loose_verts, context="VERTS")
+            bmesh.ops.delete(bm, geom=loose_verts, context='VERTS')
 
         loose_edges = [e for e in bm.edges if not e.link_faces]
         if loose_edges:
-            bmesh.ops.delete(bm, geom=loose_edges, context="EDGES")
+            bmesh.ops.delete(bm, geom=loose_edges, context='EDGES')
 
         loose_faces = [f for f in bm.faces if all([not e.is_manifold for e in f.edges])]
         if loose_faces:
-            bmesh.ops.delete(bm, geom=loose_faces, context="FACES")
+            bmesh.ops.delete(bm, geom=loose_faces, context='FACES')
 
         
         vert_count = len([v for v in bm.verts])

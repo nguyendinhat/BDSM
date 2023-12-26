@@ -3,9 +3,6 @@ from bpy.props import (IntProperty, FloatProperty,StringProperty, BoolProperty,E
 from bpy.types import AddonPreferences
 from .. context import items
 from .. interface.preferences import prefs_ui
-
-from .. modules.Machin3.PUNCHit.utils.registration import get_path as machin3_punchit_get_path
-from .. modules.Kushiro.GridModeler import pref
 class BDSM_AddonPreferences(AddonPreferences):
     bl_idname = 'BDSM'
     bl_options = {'REGISTER', 'UNDO_GROUPED'}
@@ -185,7 +182,7 @@ class BDSM_AddonPreferences(AddonPreferences):
 #============[QuickMeasure]=============
 #============[Prefs UI]=============
     show_shortcuts: BoolProperty(
-        name="Show Assigned Shortcuts", 
+        name="Show Assigned Shortcuts",
         default=False
     )
     show_conflicts: BoolProperty(
@@ -221,13 +218,36 @@ class BDSM_AddonPreferences(AddonPreferences):
         name="Ngons",
         description="Use active material for created face instead of close one",
         default=True)
+#==============[HUD]================
+    modal_hud_color: FloatVectorProperty(
+        name="HUD Font Color",
+        subtype='COLOR',
+        default=[1, 1, 1],
+        size=3,
+        min=0,
+        max=1
+    )
+    modal_hud_scale: FloatProperty(
+        name="HUD Scale",
+        default=1,
+        min=0.5,
+        max=10
+    )
+    modal_hud_hints: BoolProperty(
+        name="Show Hints",
+        default=True
+    )
+    modal_hud_follow_mouse: BoolProperty(
+        name="Follow Mouse",
+        default=True
+    )
 #==================[MACHIN3.PUNCHit]=================
     machin3_punchit_push_default: IntProperty(name="Push Default Value", description="Pushing means widening the Extrusion a tiny bit. \nThis helps with Precision Issues in Polygonal Meshes\nSet to 0 to attempt Extrusions without changing the Shape at all.", default=1, min=0)
     machin3_punchit_pull_default: IntProperty(name="Push Default Value", description="Pulling means receding the initially selected faces a tiny bit. \nThis helps with Precision Issues in Polygonal Meshes", default=1, min=0)
-    machin3_punchit_non_manifold_extrude: BoolProperty(name="Support non-manifold meshes", description="Allow Extruding on non-manifold meshes", default=False)
+    machin3_punchit_non_manifold_extrude: BoolProperty(name="Support non-manifold meshes", description="Allow Extruding on non-manifold meshes", default=True)
     machin3_punchit_show_sidebar_panel: BoolProperty(name="Show Sidebar Panel", description="Show PUNCHit Panel in 3D View's Sidebar", default=True)
     machin3_punchit_modal_hud_scale: FloatProperty(name="HUD Scale", description="Scale of HUD elements", default=1, min=0.1)
-    machin3_punchit_modal_hud_timeout: FloatProperty(name="HUD Timeout", description="Modulate duration of fading HUD elements", default=1, min=0.1, max=10)
+    machin3_punchit_modal_hud_timeout: FloatProperty(name="HUD Timeout", description="Modulate duration of fading HUD elements", default=60, min=0.1)
 #============[Kushiro.GridModeler]=============
     kushiro_gridmodeler_textsize: IntProperty(
         name='Text Size',
@@ -278,6 +298,7 @@ class BDSM_AddonPreferences(AddonPreferences):
         min=0.0, max=1.0,
         description='Shape Line Color'
         )
+
 #============[Prefs UI]=============
     def draw(self, context):
         layout = self.layout

@@ -15,8 +15,7 @@ bl_info = {
 import bpy
 from .icons import icons
 from .keymaps import shortcut
-from .modules import EdgeFlow, MeshF2, ModifierTool, Primitive
-from .modules.Machin3 import PUNCHit
+from .modules import EdgeFlow, Machine, MeshF2, ModifierTool, Primitive
 from .modules.Kushiro import FaceRegulator, FaceCutter, GridModeler
 
 from .context import addon, context
@@ -159,10 +158,10 @@ modules = [
     shortcut,
     icons,
     ModifierTool,
-    PUNCHit,
     FaceRegulator,
     FaceCutter,
     GridModeler,
+    Machine
 ]
 
 

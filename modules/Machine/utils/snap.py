@@ -1,14 +1,6 @@
 import bpy
 import bmesh
-from . raycast import cast_scene_ray_from_mouse
-
-
-
-
-
-
-
-
+from .raycast import cast_scene_ray_from_mouse
 class Snap:
     def log(self, *args, **kwargs):
         if self.debug:

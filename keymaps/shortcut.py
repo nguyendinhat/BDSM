@@ -282,10 +282,10 @@ def register():
 
         #todo: Merge
         #Hotkey J - mesh.bdsm_mesh_merge_mouse
-        km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
-        kmi = km.keymap_items.new('mesh.bdsm_mesh_merge_mouse', 'J', 'PRESS', repeat=True)
-        keymap.append([km, kmi])
-        
+        # km = kc.keymaps.new(name='Mesh', space_type='EMPTY')
+        # kmi = km.keymap_items.new('mesh.bdsm_mesh_merge_mouse', 'J', 'PRESS', repeat=True)
+        # keymap.append([km, kmi])
+
         #todo: Mesh F2
         #Hotkey shift F - mesh.bdsm_mesh_f2
         km = kc.keymaps.new(name='Mesh', space_type='EMPTY')

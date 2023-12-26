@@ -1,7 +1,7 @@
 import bpy
 from bpy.props import FloatProperty, StringProperty, FloatVectorProperty
-from ..utils.draw import draw_label, draw_init
-from ..utils.ui import init_timer_modal, set_countdown, get_timer_progress
+from ....interface.hud import draw_label, draw_init
+from ....utils.event import init_timer_modal, set_countdown, get_timer_progress
 
 class BDSM_Draw_Labels_PunchIt(bpy.types.Operator):
     bl_idname = "wm.bdsm_draw_label_punchit"
@@ -51,12 +51,13 @@ class BDSM_Draw_Labels_PunchIt(bpy.types.Operator):
     def modal(self, context, event):
         if context.area:
             context.area.tag_redraw()
-
         else:
             self.finish(context)
             return {'FINISHED'}
 
-
+        if event.type in ['LEFTMOUSE','RIGHTMOUSE','RET','TAB','ESC','SPACE','DEL','BACK_SPACE']:
+            self.finish(context)
+            return {'FINISHED'}
 
         if self.countdown < 0:
             self.finish(context)
