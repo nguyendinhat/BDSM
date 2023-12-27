@@ -28,9 +28,10 @@ from mathutils import Matrix, Vector, Quaternion, Euler
 from bpy_extras import view3d_utils
 from bpy.props import FloatProperty, IntProperty, BoolProperty, EnumProperty, StringProperty, FloatVectorProperty
 from . import geo, pref, gui,plane, keys
-
+from . items import operation_mode_items
+from ....interface.colors import green, red, blue, yellow, white, normal, orange, black
 from ....interface.hud import draw_init, draw_title, draw_prop, init_cursor, init_status, finish_status, update_HUD_location
-
+from ...Machine.utils.property import step_enum
 
 def draw_text_help(self, context, txtall):
     region = context.region
@@ -123,13 +124,13 @@ def draw_3d(self, context):
 
     if cursor != None:
         coord2 = self.create_cross(context, cursor)
-        gui.draw_line(coord2, (0, 0, 0, 1), blend=True, smooth=True, width=4)
-        gui.draw_line(coord2, (1, 1, 1, 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, (black[0], black[1], black[2], 1), blend=True, smooth=True, width=4)
+        gui.draw_line(coord2, (white[0], white[1], white[2], 1), blend=True, smooth=True, width=2)
 
     if self.coord != None:
         coord2 = self.coord
         #gui.draw_line(coord2, (1, 1, 1, 0.2), blend=True, smooth=False, width=1)
-        gui.draw_line(coord2, self.color_grid_line, blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_grid_line, blend=True, smooth=True, width=self.width_grid_line)
 
 
     if self.loops != None and len(self.loops) > 0:
@@ -153,9 +154,9 @@ def draw_3d(self, context):
                     else:
                         coord2 += [world @ p1.co, world @ p2.co]
 
-        gui.draw_line(cons, (1, 0, 0, 1), blend=True, smooth=True, width=2)
-        gui.draw_line(coord2, self.color_shape, blend=True, smooth=True, width=2)
-        gui.draw_line(sel_coord, (1, 1, 0, 1), blend=True, smooth=True, width=2)
+        gui.draw_line(cons, (red[0], red[1], red[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_shape, blend=True, smooth=True, width=self.width_shape)
+        gui.draw_line(sel_coord, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
 
 
 
@@ -176,7 +177,7 @@ def draw_3d(self, context):
                     y2 = pmat @ (c2 + Vector((0, glen, 0)))
                     coord2 = [world @ x1, world @ x2, world @ y1, world @ y2]
                     break
-            gui.draw_line(coord2, (0, 0, 1, 1), blend=True, smooth=True, width=2)
+            gui.draw_line(coord2, (blue[0], blue[1], blue[2], 1), blend=True, smooth=True, width=2)
         else:
             coord2 = []
             coord3 = []
@@ -198,8 +199,8 @@ def draw_3d(self, context):
                             coord2 += [world @ p1, world @ p2, world @ p2, world @ p3]
                             coord2 += [world @ p3, world @ p4, world @ p4, world @ p1]
 
-            gui.draw_line(coord2, (1, 1, 1, 1), blend=True, smooth=True, width=2) #white
-            gui.draw_line(coord3, (0, 0, 1, 1), blend=True, smooth=True, width=2) #Blue
+            gui.draw_line(coord2, (white[0], white[1], white[2], 1), blend=True, smooth=True, width=2) #white
+            gui.draw_line(coord3, (blue[0], blue[1], blue[2], 1), blend=True, smooth=True, width=2) #Blue
 
 
     if self.currentloop != None:
@@ -220,11 +221,11 @@ def draw_3d(self, context):
             p1, p2 = self.item
             coord2 += [world @ p1, world @ p2]
 
-        gui.draw_line(coord2, self.color_shape, blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_shape, blend=True, smooth=True, width=self.width_shape)
 
     if self.yellow_rect != None and len(self.yellow_rect) > 0:
         coord2 = [world @ a for a in self.yellow_rect]
-        gui.draw_line(coord2, (1, 1, 0, 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
 
     if self.paste != None:
         coord2 = []
@@ -236,7 +237,7 @@ def draw_3d(self, context):
                 if p1 != None and p2 != None:
                     coord2 += [world @ (p1.co+offset), world @ (p2.co+offset)]
 
-        gui.draw_line(coord2, (1, 1, 0, 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
 
     if self.circle != None:
         _, _, loop = self.circle
@@ -247,17 +248,17 @@ def draw_3d(self, context):
                 if p1 != None and p2 != None:
                     coord2 += [world @ p1.co, world @ p2.co]
 
-        gui.draw_line(coord2, (1, 1, 0, 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
 
     if self.bevel != None:
         loc1, loc2, cut = self.bevel
         coord2 = [world @ loc1, world @ loc2]
-        gui.draw_line(coord2, (28/255, 240/255, 255/255, 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, (normal[0], normal[1], normal[2], 1), blend=True, smooth=True, width=2)
 
     if self.main_edge != None:
         p1, p2 = self.main_edge
         coord2 = [world @ p1, world @ p2]
-        gui.draw_line(coord2, (0, 1, 1, 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, (green[0], green[1], green[2], 1), blend=True, smooth=True, width=2)
 
     '''
     mat = bpy.context.space_data.region_3d.perspective_matrix
@@ -278,14 +279,9 @@ def draw_3d(self, context):
         coord2 = []
         for (p1, p2) in self.eng:
             coord2 += [world @ p1, world @ p2]
-        gui.draw_line(coord2, (1, 1, 0, 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
 
-def draw_HUD(self, context):
-    if context.area == self.area:
-        draw_init(self)
-        draw_title(self, "Title", subtitle='subtitle', subtitleoffset=125)
-        draw_prop(self, "Mode", 'value', hint="scroll UP/DOWN")
-        draw_prop(self, "Dissolve", 'value', offset=18, hint="toggle D")
+
 
 class SPoint:
     def __init__(self, v):
@@ -477,22 +473,14 @@ def get_collection_objects():
 
 class GridModelerOperator(bpy.types.Operator):
     """Tooltip"""
-    bl_idname = "mesh.grid_modeler_operator_1"
+    bl_idname = "mesh.grid_modeler_operator"
     bl_label = "Grid Modeler"
     bl_options = {"REGISTER", "UNDO"}
     #, "GRAB_CURSOR", "BLOCKING"
 
 
     operation_mode : EnumProperty(
-        items = [('ngon','N-gon','','',0),
-                 ('lineart','Line Art','','',1),
-                 ('newface','Create Face','','',2),
-                 ('boolcut','Boolean Cut','','',3),
-                 ('boolslice', 'Boolean Slice','','',4),
-                 ('linepipe', 'Edge Pipe','','',5),
-                 ('linesplit','Line Split','','',6),
-                 ('addtext','Add Object','','',7),
-                 ],
+        items = operation_mode_items,
         name = "Operation",
         default = 'boolcut')
     bool_triangle: BoolProperty(
@@ -745,7 +733,6 @@ class GridModelerOperator(bpy.types.Operator):
         default = 'Object Index')
     shader = None
     handle3d = None
-    handle = None
     HUD = None
     mode_A = True
     mode_new_face = False
@@ -757,6 +744,16 @@ class GridModelerOperator(bpy.types.Operator):
     clipboard_main = None
     tmp_plane_save = None
     coord_mode = False
+    grid_len = None
+    grid_size = 1
+    edit_shape_move = False
+    edit_shape_rotate = False
+    edit_shape_scale = False
+    edit_shape_bevel = False
+    edit_shape_pivot = False
+    edit_shape_duplicate = False
+    edit_shape_insert = False
+    edit_shape_tab = False
 
 
     def __init__(self):
@@ -779,7 +776,6 @@ class GridModelerOperator(bpy.types.Operator):
         self.coord = None
         self.aligning = None
 
-        self.grid_len = None
         self.scale_up = 0
         self.scale_up_rel = 0
 
@@ -949,6 +945,70 @@ class GridModelerOperator(bpy.types.Operator):
                 layout.prop(self, "prop_add_text_bool_cut")
                 layout.prop(self, "prop_add_text_bool_exact")
 
+
+    def draw_HUD(self, context):
+        mode = 'Relative'
+        size = self.size_rel
+        if self.mode_A:
+            mode = 'Absolute'
+            size = self.size * 2
+
+        if context.area == self.area:
+            draw_init(self)
+            if not self.selection_mode:
+                draw_title(self, "Grid Modeler", subtitle='Draw Mode', subtitleoffset=200)
+                if self.circle is None:
+                    draw_prop(self, "Mode", self.operation_mode, hint="SHIFT scroll UP/DOWN")
+                else:
+                    draw_prop(self, "Mode", self.operation_mode, hint="[Lock]")
+                draw_prop(self, "Grid mode", mode, offset=18, hint="Chang Mode A")
+                draw_prop(self, "Grids", size, offset=18, hint="CTRL scroll UP/DOWN")
+                draw_prop(self, "Plane", self.grid_size, offset=18, hint="ALT scroll UP/DOWN")
+                draw_prop(self, "Drawing", self.drawing, offset=18, hint="Toggle Spacebar")
+                draw_prop(self, "Snap Grid", not self.snap_disable, offset=18, hint="Toggle S")
+                if self.pkey_count % 3 == 0:
+                    draw_prop(self, "Constraint", 'AXIS Z', value_color=blue, offset=18, hint="Change P")
+                elif self.pkey_count % 3 == 1:
+                    draw_prop(self, "Constraint", 'AXIS X', value_color=red, offset=18, hint="Change P")
+                elif self.pkey_count % 3 == 2:
+                    draw_prop(self, "Constraint", 'AXIS Y', value_color=green, offset=18, hint="Change P")
+
+                if self.circle is None:
+                    draw_prop(self, "Circle", False, offset=18, hint="Toggle C")
+                else:
+                    draw_prop(self, "Circle", True, offset=18, hint="Toggle C")
+                    draw_prop(self, "Circle edges", self.circle_cut, offset=18, hint="SHIFT scroll UP/DOWN")
+                draw_prop(self, "Main Edge", self.main_edge is not None, offset=18, hint="CTRL LEFT CLICK")
+                if self.con_mode is None:
+                    draw_prop(self, "Contruction", False, offset=18, hint="Toggle Y")
+                else:
+                    draw_prop(self, "Contruction", True, offset=18, hint="Toggle Y")
+                draw_prop(self, "Edit Mode", self.selection_mode, offset=18, hint="RIGHT CLICK")
+            elif self.selection_mode and not self.edit_shape_tab:
+                draw_title(self, "Grid Modeler", subtitle='Edit Mode', subtitleoffset=200)
+                draw_prop(self, "Edit Mode", self.selection_mode, hint="RIGHT CLICK")
+                draw_prop(self, "Edit Shape", self.edit_shape_tab,offset=18, hint="Toggle Tab")
+                draw_prop(self, "Snap Grid", not self.snap_disable, offset=18, hint="Toggle S")
+                draw_prop(self, "Move", self.edit_shape_move, offset=18, hint="Toggle W, Flip M,N")
+                draw_prop(self, "Rotate", self.edit_shape_rotate, offset=18, hint="Toggle E, Rotate 90 T")
+                draw_prop(self, "Scale", self.edit_shape_scale, offset=18, hint="Toggle R")
+                draw_prop(self, "Bevel", self.edit_shape_bevel, offset=18, hint="Toggle B")
+                draw_prop(self, "Set Pivot", self.edit_shape_pivot, offset=18, hint="Toggle X")
+                draw_prop(self, "Duplicate", self.edit_shape_duplicate, offset=18, hint="Toggle D, Delete Del")
+                draw_prop(self, "Insert", self.edit_shape_insert, offset=18, hint="Togpgle I")
+            elif self.selection_mode and self.edit_shape_tab:
+                draw_title(self, "Grid Modeler", subtitle='Edit Shape', subtitleoffset=200)
+                draw_prop(self, "Edit Mode", self.selection_mode, hint="RIGHT CLICK")
+                draw_prop(self, "Edit Shape", self.edit_shape_tab,offset=18, hint="Toggle Tab")
+                draw_prop(self, "Snap Grid", not self.snap_disable, offset=18, hint="Toggle S")
+                draw_prop(self, "Move", self.edit_shape_move, offset=18, hint="Toggle W, Flip M,N")
+                draw_prop(self, "Bevel", self.edit_shape_bevel, offset=18, hint="Toggle B")
+                draw_prop(self, "", "", offset=18, hint="Add vertex A, Delete BACKSPACE")
+    def finish(self):
+        if self.HUD is not None:
+            bpy.types.SpaceView3D.draw_handler_remove(self.HUD, 'WINDOW')
+            self.HUD  = None
+
     def object_adder_ui(self, layout):
         objs = []
         for p in bpy.data.objects:
@@ -967,15 +1027,6 @@ class GridModelerOperator(bpy.types.Operator):
             bpy.types.SpaceView3D.draw_handler_remove(
                 GridModelerOperator.handle3d, 'WINDOW')
             GridModelerOperator.handle3d = None
-
-        if GridModelerOperator.handle != None:
-            bpy.types.SpaceView3D.draw_handler_remove(
-                GridModelerOperator.handle, 'WINDOW')
-            GridModelerOperator.handle = None
-        if GridModelerOperator.HUD != None:
-            bpy.types.SpaceView3D.draw_handler_remove(
-                GridModelerOperator.HUD, 'WINDOW')
-            GridModelerOperator.HUD = None
 
     @classmethod
     def poll(cls, context):
@@ -1228,6 +1279,7 @@ class GridModelerOperator(bpy.types.Operator):
         self.pkey_count += 1
         back_hori, back_vert, back_norm = self.save_projection_backup()
         sn = self.source.normal
+        self.report({'INFO'},str(self.pkey_count % 3))
 
         if pivot:
             #main_hori, main_vert = self.space_point
@@ -1246,10 +1298,12 @@ class GridModelerOperator(bpy.types.Operator):
                 h1, h2 = back_norm
                 p1, p2 = back_hori
                 sn = (p2-p1).normalized()
+                
             elif i == 0:
                 h1, h2 = back_hori
                 p1, p2 = back_vert
                 sn = (p2-p1).normalized()
+                
 
             if self.item == None:
                 return
@@ -1900,7 +1954,7 @@ class GridModelerOperator(bpy.types.Operator):
 
     def finish_action(self, context):
         #try:
-
+        self.finish()
         GridModelerOperator.remove_draw()
         bm = geo.get_bm(context)
 
@@ -1939,8 +1993,7 @@ class GridModelerOperator(bpy.types.Operator):
             vn.normalize()
 
             fs = geo.create_face(context, bm, source, other, loops2, vn, self.bool_merge_edges)
-            #bmesh.update_edit_mesh(context.edit_object.data, loop_triangles=True, destructive=True)
-            #bpy.ops.mesh.normals_make_consistent(inside=False)
+
             self.source.select = False
             if self.bool_flip_normal:
                 for f1 in fs:
@@ -1953,10 +2006,6 @@ class GridModelerOperator(bpy.types.Operator):
                 self.make_new_object(bm, fs)
 
 
-        # elif self.operation_mode == 'triangles':
-        #     if self.virtualface:
-        #         return
-        #     geo.cut_face(context, bm, source, other, loops2, False, None, False)
 
         elif self.operation_mode == 'lineart':
             self.line_art(context, bm, source, other, loops2)
@@ -2633,6 +2682,7 @@ class GridModelerOperator(bpy.types.Operator):
                 self.cursor = None
                 self.paste = None
                 self.handlers.pop()
+                self.edit_shape_move = False
             return {'RUNNING_MODAL'}
 
         elif event.type == 'MOUSEMOVE':
@@ -2646,16 +2696,17 @@ class GridModelerOperator(bpy.types.Operator):
 
         elif event.type == 'ESC':
             if event.value == 'PRESS':
+                self.edit_shape_move = False
                 self.paste = None
                 self.handlers.pop()
                 return {'RUNNING_MODAL'}
 
-        elif event.type == 'U':
-            if self.snap_disable == False:
-                self.snap_disable = True
-            else:
-                self.snap_disable = False
-            return {'RUNNING_MODAL'}
+        # elif event.type == 'S':
+        #     if self.snap_disable == False:
+        #         self.snap_disable = True
+        #     else:
+        #         self.snap_disable = False
+        #     return {'RUNNING_MODAL'}
 
     def editshape_select(self, context, loc):
         sel = []
@@ -2890,14 +2941,15 @@ class GridModelerOperator(bpy.types.Operator):
                     self.selection = (loc, None)
                     self.handlers.append(self.edit_select_drag_control)
                 return {'RUNNING_MODAL'}
-            elif event.type == 'U':
-                if self.snap_disable == False:
-                    self.snap_disable = True
-                else:
-                    self.snap_disable = False
-                return {'RUNNING_MODAL'}
+            # elif event.type == 'S':
+            #     if self.snap_disable == False:
+            #         self.snap_disable = True
+            #     else:
+            #         self.snap_disable = False
+            #     return {'RUNNING_MODAL'}
 
             elif event.type == 'A':
+                self.edit_shape_add_vert = True
                 self.edit_add_point(context, event)
                 return {'RUNNING_MODAL'}
 
@@ -2905,23 +2957,38 @@ class GridModelerOperator(bpy.types.Operator):
                 self.edit_break()
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'G':
+            elif event.type == 'W':
+                self.report({'INFO'},'1')
+                self.edit_shape_move = True
                 self.edit_move_selected(context, event)
                 return {'RUNNING_MODAL'}
+           
+            # elif event.type == 'E':
+            #     self.report({'INFO'},'1')
+            #     self.edit_shape_move = True
+            #     self.edit_move_selected(context, event)
+            #     return {'RUNNING_MODAL'}
+            # elif event.type == 'R':
+            #     self.report({'INFO'},'1')
+            #     self.edit_shape_move = True
+            #     self.edit_move_selected(context, event)
+            #     return {'RUNNING_MODAL'}
 
-            elif event.type == 'DEL':
+            elif event.type in ['DEL', 'BACK_SPACE']:
                 self.delete_points()
                 self.editshape = []
                 return {'RUNNING_MODAL'}
 
             elif event.type == 'B':
+                self.edit_shape_bevel = True
                 self.points_backup()
                 loc = self.calc_pos(context, event)
                 self.editshape_bevel = (loc, loc, 1)
                 self.handlers.append(self.editshape_bevel_control)
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'ESC' or event.type == 'E':
+            elif event.type == 'ESC' or event.type == 'TAB':
+                self.edit_shape_tab = False
                 self.editshape = None
                 self.handlers.pop()
                 self.text_handlers.pop()
@@ -2971,10 +3038,12 @@ class GridModelerOperator(bpy.types.Operator):
         if event.value == 'PRESS':
             if event.type == 'LEFTMOUSE':
                 self.editshape = []
+                self.edit_shape_bevel = False
                 self.editshape_bevel = None
                 self.handlers.pop()
                 return {'RUNNING_MODAL'}
             elif event.type == 'ESC':
+                self.edit_shape_bevel = False
                 self.editshape_bevel = None
                 self.points_backup_load()
                 self.points_backup_clear()
@@ -3007,7 +3076,6 @@ class GridModelerOperator(bpy.types.Operator):
 
     def editshape_move_control(self, context, event):
         obj = context.edit_object
-
         if event.type == 'MOUSEMOVE':
             loc = self.calc_pos(context, event)
             p1, p2 = self.editshape_loc
@@ -3021,9 +3089,10 @@ class GridModelerOperator(bpy.types.Operator):
             if event.type == 'LEFTMOUSE':
                 self.editshape = []
                 self.handlers.pop()
+                self.edit_shape_move = False
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'U':
+            elif event.type == 'S':
                 if self.snap_disable == False:
                     self.snap_disable = True
                 else:
@@ -3031,6 +3100,7 @@ class GridModelerOperator(bpy.types.Operator):
                 return {'RUNNING_MODAL'}
 
             elif event.type == 'ESC':
+                self.edit_shape_move = False
                 self.points_backup_load()
                 self.points_backup_clear()
                 self.handlers.pop()
@@ -3049,6 +3119,7 @@ class GridModelerOperator(bpy.types.Operator):
         obj = context.edit_object
         if event.type == 'LEFTMOUSE':
             if event.value == 'PRESS':
+                self.edit_shape_bevel = False
                 self.bevel = None
                 self.loop_backup_clear()
                 self.handlers.pop()
@@ -3061,6 +3132,7 @@ class GridModelerOperator(bpy.types.Operator):
 
         elif event.type == 'ESC':
             if event.value == 'PRESS':
+                self.edit_shape_bevel = False
                 self.bevel = None
                 self.loop_backup_load()
                 self.loop_backup_clear()
@@ -3307,6 +3379,7 @@ class GridModelerOperator(bpy.types.Operator):
             if event.value == 'PRESS':
                 self.snap_to_grid(context, event)
                 self.new_center_commit(self.cursor)
+                self.edit_shape_pivot = False
                 self.cursor = None
                 self.guide_points = None
                 self.handlers.pop()
@@ -3318,16 +3391,17 @@ class GridModelerOperator(bpy.types.Operator):
 
         if event.value == 'PRESS':
             if event.type == 'ESC':
+                self.edit_shape_pivot = False
                 self.cursor = None
                 self.handlers.pop()
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'U':
-                if self.snap_disable == False:
-                    self.snap_disable = True
-                else:
-                    self.snap_disable = False
-                return {'RUNNING_MODAL'}
+            # elif event.type == 'S':
+            #     if self.snap_disable == False:
+            #         self.snap_disable = True
+            #     else:
+            #         self.snap_disable = False
+            #     return {'RUNNING_MODAL'}
 
     def get_numbers(self, event):
         if event.type == 'ONE':
@@ -3394,8 +3468,10 @@ class GridModelerOperator(bpy.types.Operator):
             self.rotate_selected_round_free()
             return {'RUNNING_MODAL'}
 
-        if event.type == 'R' or event.type == 'LEFTMOUSE':
+        if event.type == 'E' or event.type == 'LEFTMOUSE':
             self.rotation = None
+            self.edit_shape_rotate = False
+            
             self.loop_backup_clear()
             self.handlers.pop()
             return {'RUNNING_MODAL'}
@@ -3403,6 +3479,7 @@ class GridModelerOperator(bpy.types.Operator):
         elif event.type == 'ESC':
             self.loop_backup_load()
             self.rotation = None
+            self.edit_shape_rotate = False
             self.loop_backup_clear()
             self.handlers.pop()
             return {'RUNNING_MODAL'}
@@ -3418,6 +3495,7 @@ class GridModelerOperator(bpy.types.Operator):
             return
 
         if event.type == 'LEFTMOUSE':
+            self.edit_shape_scale = False
             self.scale = None
             self.loop_backup_clear()
             self.handlers.pop()
@@ -3425,6 +3503,7 @@ class GridModelerOperator(bpy.types.Operator):
 
         elif event.type == 'ESC':
             self.loop_backup_load()
+            self.edit_shape_scale = False
             self.scale = None
             self.loop_backup_clear()
             self.handlers.pop()
@@ -3458,6 +3537,7 @@ class GridModelerOperator(bpy.types.Operator):
             return
 
         if event.type == 'LEFTMOUSE':
+            self.edit_shape_duplicate = False
             self.paste_commit()
             self.cursor = None
             self.paste = None
@@ -3469,6 +3549,7 @@ class GridModelerOperator(bpy.types.Operator):
             return {'RUNNING_MODAL'}
 
         elif event.type == 'ESC':
+            self.edit_shape_duplicate = False
             self.cursor = None
             self.paste = None
             self.array_count = 0
@@ -3737,7 +3818,7 @@ class GridModelerOperator(bpy.types.Operator):
         a1, a2 = self.main_edge
         for item in self.loops:
             #if item.select == False:
-                #continue
+   flag_up             #continue
             loopes1 = [p1.co for p1 in item.loop]
             if len(loopes1) < 2:
                 continue
@@ -3778,7 +3859,8 @@ class GridModelerOperator(bpy.types.Operator):
         if event.value != 'PRESS':
             return
 
-        if event.type == 'RIGHTMOUSE' or event.type == 'W':
+        
+        if event.type == 'RIGHTMOUSE':
             self.text_handlers.pop()
             self.handlers.pop()
             self.selection_mode = False
@@ -3843,7 +3925,7 @@ class GridModelerOperator(bpy.types.Operator):
             self.flag_up(context, event)
             return {'RUNNING_MODAL'}
 
-        elif event.type == 'U':
+        elif event.type == 'S':
             if self.snap_disable == False:
                 self.snap_disable = True
             else:
@@ -3943,10 +4025,12 @@ class GridModelerOperator(bpy.types.Operator):
             return
         else:
             if event.type == 'B':
+                self.edit_shape_bevel = True
                 self.handlers.append(self.bevel_control)
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'E':
+            elif event.type == 'TAB':
+                self.edit_shape_tab = True
                 self.editshape = []
                 self.handlers.append(self.editshape_control)
                 self.text_handlers.append(self.edit_shape_text)
@@ -3958,6 +4042,7 @@ class GridModelerOperator(bpy.types.Operator):
                 return {'RUNNING_MODAL'}
 
             elif event.type == 'X' and event.ctrl == False:
+                self.edit_shape_pivot = True
                 self.guide_points = [p1.co for item in self.loops for p1 in item.loop]
                 self.snap_to_grid(context, event)
                 self.handlers.append(self.new_center_control)
@@ -3969,7 +4054,9 @@ class GridModelerOperator(bpy.types.Operator):
                     self.delete_shape()
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'G':
+            elif event.type == 'W':
+                self.report({'INFO'},'2')
+                self.edit_shape_move = True
                 self.copy_loop()
                 if GridModelerOperator.clipboard:
                     self.delete_shape()
@@ -3990,14 +4077,16 @@ class GridModelerOperator(bpy.types.Operator):
                 self.rotate_selected_vert()
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'R':
+            elif event.type == 'E':
+                self.edit_shape_rotate = True
                 self.text_input = ''
                 self.rotation = (None, None)
                 self.loop_backup()
                 self.handlers.append(self.rotation_control)
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'S':
+            elif event.type == 'R':
+                self.edit_shape_scale = True
                 self.scale = (None, None)
                 self.scale_mode = None
                 self.loop_backup()
@@ -4005,6 +4094,7 @@ class GridModelerOperator(bpy.types.Operator):
                 return {'RUNNING_MODAL'}
 
             elif event.type == 'D':
+                self.edit_shape_duplicate = True
                 self.array = True
                 loc = self.calc_pos(context, event)
                 self.array_pending(loc)
@@ -4016,6 +4106,7 @@ class GridModelerOperator(bpy.types.Operator):
                 return {'RUNNING_MODAL'}
 
             elif event.type == 'I':
+                self.edit_shape_insert = True
                 loc = self.calc_pos(context, event)
                 self.base_location = loc
                 self.points_backup()
@@ -4092,6 +4183,8 @@ class GridModelerOperator(bpy.types.Operator):
         obj = context.edit_object
         if event.type == 'LEFTMOUSE':
             if event.value == 'PRESS':
+                self.edit_shape_insert = False
+                
                 self.base_location = None
                 self.points_backup_clear()
                 self.handlers.pop()
@@ -4105,6 +4198,7 @@ class GridModelerOperator(bpy.types.Operator):
 
         elif event.type == 'ESC':
             if event.value == 'PRESS':
+                self.edit_shape_insert = False
                 self.base_location = None
                 self.points_backup_load()
                 self.points_backup_clear()
@@ -4439,6 +4533,8 @@ class GridModelerOperator(bpy.types.Operator):
                     self.con_mode = (None, None)
 
             elif event.type == 'W':
+                self.report({'INFO'},'3')
+                self.edit_shape_move = True
                 if self.drawing:
                     return {'RUNNING_MODAL'}
                 else:
@@ -4483,19 +4579,6 @@ class GridModelerOperator(bpy.types.Operator):
                 self.update_guide(context)
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'S':
-                #GridModelerOperator.mode_new_face = not GridModelerOperator.mode_new_face
-                if self.operation_mode == 'ngon':
-                    self.operation_mode = 'triangles'
-                elif self.operation_mode == 'triangles':
-                    self.operation_mode = 'newface'
-                elif self.operation_mode == 'newface':
-                    self.operation_mode = 'boolcut'
-                elif self.operation_mode == 'boolcut':
-                    self.operation_mode = 'ngon'
-                return {'RUNNING_MODAL'}
-
-
             elif event.type == 'Z' and event.ctrl:
                 self.undo_point(context)
                 context.area.tag_redraw()
@@ -4509,7 +4592,9 @@ class GridModelerOperator(bpy.types.Operator):
                     self.circle = None
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'G':
+            elif event.type == 'W':
+                self.edit_shape_move = True
+                self.report({'INFO'},'4')
                 cen = self.source.calc_center_median()
                 m1, v1 = self.space
                 m2 = m1 / 2
@@ -4517,7 +4602,7 @@ class GridModelerOperator(bpy.types.Operator):
                 self.update_guide(context)
                 return {'RUNNING_MODAL'}
 
-            elif event.type == 'U':
+            elif event.type == 'S':
                 if event.ctrl:
                     if self.snap_to_shape == False:
                         self.snap_to_shape = True
@@ -4636,10 +4721,14 @@ class GridModelerOperator(bpy.types.Operator):
         elif event.alt:
             if self.mode_A:
                 self.scale_up += num
+                if GridModelerOperator.grid_size + num > 0:
+                    GridModelerOperator.grid_size +=num
                 if self.scale_up < 0:
                     self.scale_up = 0
             else:
                 self.scale_up_rel += num
+                if GridModelerOperator.grid_size + num > 0:
+                    GridModelerOperator.grid_size +=num
                 if self.scale_up_rel < 0:
                     self.scale_up_rel = 0
             self.update_guide(context)
@@ -4742,6 +4831,11 @@ class GridModelerOperator(bpy.types.Operator):
         grid_enlarge = wheel or mac_key or mac_key2
 
         # print(event.type, event.value)
+        if event.shift and event.type in ['WHEELUPMOUSE', 'WHEELDOWNMOUSE'] and self.circle is None:
+            if event.type in ['WHEELUPMOUSE'] and event.value == "PRESS":
+                self.operation_mode = step_enum(self.operation_mode, operation_mode_items, 1)
+            elif event.type in ['WHEELDOWNMOUSE'] and event.value == "PRESS":
+                self.operation_mode = step_enum(self.operation_mode, operation_mode_items, -1)
 
         if event.type == 'TRACKPADPAN' or event.type == 'TRACKPADZOOM':
             return {'PASS_THROUGH'}
@@ -4829,7 +4923,9 @@ class GridModelerOperator(bpy.types.Operator):
             self.show_keys = preference['bool_showkey']
             self.text_pos_x = preference['text_pos_x']
             self.color_grid_line = preference['line_color']
+            self.width_grid_line = preference['line_width']
             self.color_shape = preference['shape_color']
+            self.width_shape = preference['shape_width']
 
             '''
             if self.projection != None:
@@ -4852,11 +4948,9 @@ class GridModelerOperator(bpy.types.Operator):
             GridModelerOperator.remove_draw()
             GridModelerOperator.handle3d = bpy.types.SpaceView3D.draw_handler_add(
                 draw_3d, args, 'WINDOW', 'POST_VIEW')
-            GridModelerOperator.handle = bpy.types.SpaceView3D.draw_handler_add(
-                draw_text_callback, args, 'WINDOW', 'POST_PIXEL')
             self.area = context.area
-            GridModelerOperator.HUD = bpy.types.SpaceView3D.draw_handler_add(
-                draw_HUD, args, 'WINDOW', 'POST_PIXEL')
+            self.HUD = bpy.types.SpaceView3D.draw_handler_add(
+                self.draw_HUD, (context,), 'WINDOW', 'POST_PIXEL')
             context.area.tag_redraw()
 
             context.window_manager.modal_handler_add(self)
@@ -5036,6 +5130,7 @@ class GridModelerOperator(bpy.types.Operator):
         self.removebackup2()
         self.clear_mark(context)
         '''
+        self.finish()
         GridModelerOperator.remove_draw()
 
         '''

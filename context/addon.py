@@ -266,10 +266,14 @@ class BDSM_AddonPreferences(AddonPreferences):
     )
     kushiro_gridmodeler_default_operation_mode : EnumProperty(
                 #(identifier, name, description, icon, number)
-        items = [('triangles','Triangles','','',0),
-                 ('ngon','N-gon','','',1),
-                 ('newface','Create face','','',2),
+        items = [('ngon','N-gon','','',0),
+                 ('lineart','Line Art','','',1),
+                 ('newface','Create Face','','',2),
                  ('boolcut','Boolean Cut','','',3),
+                 ('boolslice', 'Boolean Slice','','',4),
+                 ('linepipe', 'Edge Pipe','','',5),
+                 ('linesplit','Line Split','','',6),
+                 ('addtext','Add Object','','',7),
                  ],
         name = 'Default Operation Mode',
         default = 'boolcut')
@@ -287,16 +291,31 @@ class BDSM_AddonPreferences(AddonPreferences):
         name='Grid Line Color',
         subtype='COLOR',
         size=4,
-        default=(0.02, 0.82, 0.85, 0.7),
+        default=(1, 1, 1, 0.3),
+        min=0.0, max=1.0,
         description='Grid Line Color'
         )
+    kushiro_gridmodeler_line_width: IntProperty(
+        name='Grid Line Width',
+        min=1, max=10,
+        default = 2,
+        description='Grid Line Width'
+        )
+
     kushiro_gridmodeler_shape_color: FloatVectorProperty(
         name='Shape Line Color',
         subtype='COLOR',
         size=4,
-        default=(0.02, 0.82, 0.85, 1),
+        default=(0.5, 1, 0.5, 1),
         min=0.0, max=1.0,
         description='Shape Line Color'
+        )
+
+    kushiro_gridmodeler_shape_width: IntProperty(
+        name='Shape Line Width',
+        min=1, max=10,
+        default = 2,
+        description='Shape Line Width'
         )
 
 #============[Prefs UI]=============

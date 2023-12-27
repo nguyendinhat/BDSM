@@ -34,7 +34,9 @@ def get_pref():
         'bool_showkey': False,
         'text_pos_x': 120,
         'line_color': (1, 1, 1, 0.2),
-        'shape_color': (1, 1, 1, 1)
+        'line_width': 2,
+        'shape_color': (1, 1, 1, 1),
+        'shape_width': 2,
         }
 
     try:
@@ -46,7 +48,9 @@ def get_pref():
         pe['bool_showkey'] = prefs.kushiro_gridmodeler_bool_showkey
         pe['text_pos_x'] = prefs.kushiro_gridmodeler_text_pos_x
         pe['line_color'] = prefs.kushiro_gridmodeler_line_color
+        pe['line_width'] = prefs.kushiro_gridmodeler_line_width
         pe['shape_color'] = prefs.kushiro_gridmodeler_shape_color
+        pe['shape_width'] = prefs.kushiro_gridmodeler_shape_width
         return pe
     except:
         print('pref error')

@@ -62,7 +62,11 @@ def prefs_ui(self, layout):
     row = col.row()
     row.prop(self, 'kushiro_gridmodeler_line_color')
     row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_line_width')
+    row = col.row()
     row.prop(self, 'kushiro_gridmodeler_shape_color')
+    row = col.row()
+    row.prop(self, 'kushiro_gridmodeler_shape_width')
 
     #todo: Shortcut
     box = layout.box()
