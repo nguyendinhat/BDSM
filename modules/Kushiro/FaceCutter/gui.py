@@ -97,7 +97,7 @@ def draw_text_adv(pam):
     text, x, y, size = pam
     font_id = 0
     # draw some text
-    blf.color(font_id, 0.94,0.55,0.17,1)
+    blf.color(font_id, 1,1,1,1)
     blf.position(font_id, x, y, 0)
     if bpy.app.version < (3, 5, 0):
         blf.size(font_id, math.floor(size * sc), 72)

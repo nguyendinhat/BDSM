@@ -37,6 +37,19 @@ def get_pref():
         'line_width': 2,
         'shape_color': (1, 1, 1, 1),
         'shape_width': 2,
+        'color_cursor1':(0 ,0 ,0, 1),
+        'color_cursor2':(1 ,1 ,1, 1),
+        'color_construction_line': (1, 0, 0, 1),
+        'color_line_selected': (1, 1, 1, 1),
+        'color_pivot': (0, 0, 1, 1),
+        'color_vertex': (1, 1, 1, 1),
+        'color_vertex_selected': (0, 1, 1, 1),
+        'color_box_select': (1, 1, 1, 1),
+        'color_duplicate': (1, 1, 0, 1),
+        'color_line_bevel': (1, 1, 1, 1),
+        'color_circle_draw': (1, 1, 0, 1),
+        'color_main_edge': (0, 1, 0, 1),
+        'color_eng': (1, 0, 1, 1),
         }
 
     try:
@@ -51,6 +64,20 @@ def get_pref():
         pe['line_width'] = prefs.kushiro_gridmodeler_line_width
         pe['shape_color'] = prefs.kushiro_gridmodeler_shape_color
         pe['shape_width'] = prefs.kushiro_gridmodeler_shape_width
+        pe['color_cursor1'] = prefs.kushiro_gridmodeler_color_cursor1
+        pe['color_cursor2'] = prefs.kushiro_gridmodeler_color_cursor2
+        pe['color_construction_line'] = prefs.kushiro_gridmodeler_color_construction_line
+        pe['color_line_selected'] = prefs.kushiro_gridmodeler_color_line_selected
+        pe['color_pivot'] = prefs.kushiro_gridmodeler_color_pivot
+        pe['color_vertex'] = prefs.kushiro_gridmodeler_color_vertex
+        pe['color_vertex_selected'] = prefs.kushiro_gridmodeler_color_vertex_selected
+        pe['color_box_select'] = prefs.kushiro_gridmodeler_color_box_select
+        pe['color_duplicate'] = prefs.kushiro_gridmodeler_color_duplicate
+        pe['color_line_bevel'] = prefs.kushiro_gridmodeler_color_line_bevel
+        pe['color_circle_draw'] = prefs.kushiro_gridmodeler_color_circle_draw
+        pe['color_main_edge'] = prefs.kushiro_gridmodeler_color_main_edge
+        pe['color_eng'] = prefs.kushiro_gridmodeler_color_eng
+        
         return pe
     except:
         print('pref error')

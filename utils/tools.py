@@ -742,4 +742,7 @@ def set_status_text(context, text_list, spacing=5, mb="\u25cf", kb="\u25a0"):
     else:
         context.workspace.status_text_set(None)
 
-
+def tuple_append(tuple1, child):
+    tuple1_list = list(tuple1)
+    tuple1_list.append(child)
+    return tuple(tuple1_list)

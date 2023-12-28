@@ -2,6 +2,8 @@ import bpy, tempfile, os
 from bpy.props import (IntProperty, FloatProperty,StringProperty, BoolProperty,EnumProperty,BoolVectorProperty, FloatVectorProperty)
 from bpy.types import AddonPreferences
 from .. context import items
+from .. utils.tools import tuple_append
+from .. interface.colors import black,white,grey,red,green,blue,yellow,normal,orange,light_red,light_green, light_blue
 from .. interface.preferences import prefs_ui
 class BDSM_AddonPreferences(AddonPreferences):
     bl_idname = 'BDSM'
@@ -316,6 +318,97 @@ class BDSM_AddonPreferences(AddonPreferences):
         min=1, max=10,
         default = 2,
         description='Shape Line Width'
+        )
+    kushiro_gridmodeler_color_cursor1: FloatVectorProperty(
+        name='Color Curor 1',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(black,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_cursor2: FloatVectorProperty(
+        name='Color Curor 2',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(white,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_construction_line: FloatVectorProperty(
+        name='Color Construction Line',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(yellow,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_line_selected: FloatVectorProperty(
+        name='Color  Line Lelected',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(white,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_pivot: FloatVectorProperty(
+        name='Color Pivot',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(blue,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_vertex: FloatVectorProperty(
+        name='Color Vertex',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(white,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_vertex_selected: FloatVectorProperty(
+        name='Color Vertex Selected',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(blue,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_box_select: FloatVectorProperty(
+        name='Color Box Select',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(white,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_duplicate: FloatVectorProperty(
+        name='Color Duplicate',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(yellow,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_line_bevel: FloatVectorProperty(
+        name='Color Bevel',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(white,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_circle_draw: FloatVectorProperty(
+        name='Color Circle Draw',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(yellow,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_main_edge: FloatVectorProperty(
+        name='Color Main Edge',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(green,1),
+        min=0.0, max=1.0,
+        )
+    kushiro_gridmodeler_color_eng: FloatVectorProperty(
+        name='Color Eng',
+        subtype='COLOR',
+        size=4,
+        default=tuple_append(yellow,1),
+        min=0.0, max=1.0,
         )
 
 #============[Prefs UI]=============

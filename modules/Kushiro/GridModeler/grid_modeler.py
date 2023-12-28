@@ -124,8 +124,8 @@ def draw_3d(self, context):
 
     if cursor != None:
         coord2 = self.create_cross(context, cursor)
-        gui.draw_line(coord2, (black[0], black[1], black[2], 1), blend=True, smooth=True, width=4)
-        gui.draw_line(coord2, (white[0], white[1], white[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_cursor1, blend=True, smooth=True, width=4) #color cursor1
+        gui.draw_line(coord2, self.color_cursor2, blend=True, smooth=True, width=2) #color cursor2
 
     if self.coord != None:
         coord2 = self.coord
@@ -154,9 +154,9 @@ def draw_3d(self, context):
                     else:
                         coord2 += [world @ p1.co, world @ p2.co]
 
-        gui.draw_line(cons, (red[0], red[1], red[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(cons, self.color_construction_line, blend=True, smooth=True, width=2) #color construction line
         gui.draw_line(coord2, self.color_shape, blend=True, smooth=True, width=self.width_shape)
-        gui.draw_line(sel_coord, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(sel_coord, self.color_line_selected, blend=True, smooth=True, width=2) #color line selected
 
 
 
@@ -177,7 +177,7 @@ def draw_3d(self, context):
                     y2 = pmat @ (c2 + Vector((0, glen, 0)))
                     coord2 = [world @ x1, world @ x2, world @ y1, world @ y2]
                     break
-            gui.draw_line(coord2, (blue[0], blue[1], blue[2], 1), blend=True, smooth=True, width=2)
+            gui.draw_line(coord2, self.color_pivot, blend=True, smooth=True, width=2) #color Pivot
         else:
             coord2 = []
             coord3 = []
@@ -199,8 +199,8 @@ def draw_3d(self, context):
                             coord2 += [world @ p1, world @ p2, world @ p2, world @ p3]
                             coord2 += [world @ p3, world @ p4, world @ p4, world @ p1]
 
-            gui.draw_line(coord2, (white[0], white[1], white[2], 1), blend=True, smooth=True, width=2) #white
-            gui.draw_line(coord3, (blue[0], blue[1], blue[2], 1), blend=True, smooth=True, width=2) #Blue
+            gui.draw_line(coord2, self.color_vertex, blend=True, smooth=True, width=2) #color vertext
+            gui.draw_line(coord3, self.color_vertex_selected, blend=True, smooth=True, width=2) #color vertex selected
 
 
     if self.currentloop != None:
@@ -225,7 +225,7 @@ def draw_3d(self, context):
 
     if self.yellow_rect != None and len(self.yellow_rect) > 0:
         coord2 = [world @ a for a in self.yellow_rect]
-        gui.draw_line(coord2, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_box_select, blend=True, smooth=True, width=2) #color box select
 
     if self.paste != None:
         coord2 = []
@@ -237,7 +237,7 @@ def draw_3d(self, context):
                 if p1 != None and p2 != None:
                     coord2 += [world @ (p1.co+offset), world @ (p2.co+offset)]
 
-        gui.draw_line(coord2, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_duplicate, blend=True, smooth=True, width=2) #color duplicate
 
     if self.circle != None:
         _, _, loop = self.circle
@@ -248,17 +248,17 @@ def draw_3d(self, context):
                 if p1 != None and p2 != None:
                     coord2 += [world @ p1.co, world @ p2.co]
 
-        gui.draw_line(coord2, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_circle_draw, blend=True, smooth=True, width=2)#color circle draw
 
     if self.bevel != None:
         loc1, loc2, cut = self.bevel
         coord2 = [world @ loc1, world @ loc2]
-        gui.draw_line(coord2, (normal[0], normal[1], normal[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_line_bevel, blend=True, smooth=True, width=2) #color Line Bevel
 
     if self.main_edge != None:
         p1, p2 = self.main_edge
         coord2 = [world @ p1, world @ p2]
-        gui.draw_line(coord2, (green[0], green[1], green[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_main_edge, blend=True, smooth=True, width=2) #color main edge
 
     '''
     mat = bpy.context.space_data.region_3d.perspective_matrix
@@ -279,7 +279,7 @@ def draw_3d(self, context):
         coord2 = []
         for (p1, p2) in self.eng:
             coord2 += [world @ p1, world @ p2]
-        gui.draw_line(coord2, (yellow[0], yellow[1], yellow[2], 1), blend=True, smooth=True, width=2)
+        gui.draw_line(coord2, self.color_eng, blend=True, smooth=True, width=2) #color eng
 
 
 
@@ -1001,7 +1001,7 @@ class GridModelerOperator(bpy.types.Operator):
                 draw_prop(self, "Edit Mode", self.selection_mode, hint="RIGHT CLICK")
                 draw_prop(self, "Edit Shape", self.edit_shape_tab,offset=18, hint="Toggle Tab")
                 draw_prop(self, "Snap Grid", not self.snap_disable, offset=18, hint="Toggle S")
-                draw_prop(self, "Move", self.edit_shape_move, offset=18, hint="Toggle W, Flip M,N")
+                draw_prop(self, "Move", self.edit_shape_move, offset=18, hint="Toggle W")
                 draw_prop(self, "Bevel", self.edit_shape_bevel, offset=18, hint="Toggle B")
                 draw_prop(self, "", "", offset=18, hint="Add vertex A, Delete BACKSPACE")
     def finish(self):
@@ -4926,7 +4926,20 @@ class GridModelerOperator(bpy.types.Operator):
             self.width_grid_line = preference['line_width']
             self.color_shape = preference['shape_color']
             self.width_shape = preference['shape_width']
-
+            self.color_cursor1 = preference['color_cursor1']
+            self.color_cursor2 = preference['color_cursor2']
+            self.color_construction_line = preference['color_construction_line']
+            self.color_line_selected = preference['color_line_selected']
+            self.color_pivot = preference['color_pivot']
+            self.color_vertex = preference['color_vertex']
+            self.color_vertex_selected = preference['color_vertex_selected']
+            self.color_box_select = preference['color_box_select']
+            self.color_duplicate = preference['color_duplicate']
+            self.color_line_bevel = preference['color_line_bevel']
+            self.color_circle_draw = preference['color_circle_draw']
+            self.color_main_edge = preference['color_main_edge']
+            self.color_eng = preference['color_eng']
+            
             '''
             if self.projection != None:
                 GridModelerOperator.mode_A = False

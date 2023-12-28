@@ -23,6 +23,10 @@ from mathutils import Matrix, Vector, Quaternion
 from bpy_extras import view3d_utils
 from bpy.types import Operator
 from . import gui
+from ....interface.hud import draw_init, draw_title, draw_prop, init_cursor, init_status, finish_status, update_HUD_location
+from ....interface.draw import draw_lines, draw_point, draw_points, draw_vector
+from ...Machine.utils.property import step_enum
+
 
 class BDSM_Mesh_Face_Cutter(Operator):
     """Tooltip"""
@@ -36,6 +40,46 @@ class BDSM_Mesh_Face_Cutter(Operator):
     """
     #, "GRAB_CURSOR", "BLOCKING"
 
+    def draw_HUD(self, context):
+        last = self.handlers[-1]
+        if context.area == self.area:
+            if last == self.overall:
+                draw_init(self)
+                draw_title(self, "Face Cutter", subtitle='Over All', subtitleoffset=200)
+                draw_prop(self, "Full Mode", self.full_width, hint="Toggle W, Comfirm Q")
+                draw_prop(self, "Handle Cut", False, offset=18,hint="LEFT")
+                draw_prop(self, "Easy Edit mode", False,offset=18, hint="Toggle E")
+                draw_prop(self, "Cut through", self.loop_mode, offset=18, hint="PRESS R, Undo Ctrl Z")
+                draw_prop(self, "", "", offset=18, hint="Undo Ctrl Z")
+                draw_prop(self, "", "", offset=18, hint="Press ESC to Exit")
+                
+            elif last == self.handle_cut:
+                draw_init(self)
+                draw_title(self, "Face Cutter", subtitle='Handle Cut', subtitleoffset=200)
+                draw_prop(self, "Full Mode", self.full_width,hint="Toggle W")
+                draw_prop(self, "Handle Cut", True, offset=18,hint="LEFT")
+                draw_prop(self, "Easy Edit mode", False,offset=18, hint="Toggle E")
+                draw_prop(self, "Cut through", self.loop_mode, offset=18, hint="PRESS R, Shift R: Limited")
+                draw_prop(self, "Divide", self.snaps, offset=18, hint="Ctrl + scroll UP/DOWN")
+                draw_prop(self, "Degree°", self.degree, offset=18, hint="D:45°, F:30°, XZ:5°, CV:1°")
+                draw_prop(self, "Align", self.align_active, offset=18, hint="Press A")
+                draw_prop(self, "", "", offset=18, hint="Undo Ctrl Z")
+                draw_prop(self, "", "", offset=18, hint="S: Symmetric")
+                draw_prop(self, "", "", offset=18, hint="1 - 9: Set Cut")
+                draw_prop(self, "", "", offset=18, hint="Q: Comfirm")
+                draw_prop(self, "", "", offset=18, hint="Press ESC to Exit")
+                
+            elif last == self.handle_linked:
+                draw_init(self)
+                draw_title(self, "Face Cutter", subtitle='Edit mode', subtitleoffset=200)
+                draw_prop(self, "Full Mode", self.full_width, hint="Toggle W")
+                draw_prop(self, "Handle Cut", False, offset=18,hint="LEFT")
+                draw_prop(self, "Easy Edit mode", True,offset=18, hint="Toggle E")
+                draw_prop(self, "Cut through", self.loop_mode, offset=18, hint="PRESS R")
+                draw_prop(self, "", "", offset=18, hint="Undo Ctrl Z")
+                draw_prop(self, "", "", offset=18, hint="1 - 9: Set Cut")
+                draw_prop(self, "", "", offset=18, hint="Q: Comfirm")
+                draw_prop(self, "", "", offset=18, hint="Press ESC to Exit")
 
     def draw_edge(self, a, b):
         world = bpy.context.active_object.matrix_world
@@ -716,8 +760,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
             sc = bpy.context.preferences.system.ui_scale
             # gui.textpos = [(str(self.degree), pos.x + 10, pos.y + 10, 25)]
             gui.textpos = [
-                            ('Degree:\t\t\t\t'+str(self.degree)+'°', pos.x + 30 , pos.y + 60 , math.floor(8 * sc)),
-                            ('Divide:\t\t\t\t\t'+str(self.snaps), pos.x + 30 , pos.y + 20 , math.floor(8 * sc))
+                            ('.', pos.x -1, pos.y -1, math.floor(8 * sc))
                             ]
         # else:
         #     gui.textpos = []
@@ -813,7 +856,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
     def set_snaps(self, context, event, num):
         self.snaps = num
         self.move_cut_point( context, event)
-        self.print_hint()
+        # self.print_hint()
 
 
 
@@ -907,8 +950,12 @@ class BDSM_Mesh_Face_Cutter(Operator):
 
         elif event.type == 'A':
             if event.value == 'PRESS':
+                self.align_active = True
                 self.align_line(context, event)
                 self.move_cut_point( context, event)
+                return {'RUNNING_MODAL'}
+            if event.value == 'RELEASE':
+                self.align_active = False
                 return {'RUNNING_MODAL'}
 
 
@@ -953,6 +1000,8 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.cut_face(context)
                 # gui.lines = []
                 # self.handlers.pop()
+                
+                self.finish()
                 gui.draw_handle_remove()
                 return {'FINISHED'}
 
@@ -961,6 +1010,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.loop_mode = True
                 self.loop_separate = event.shift
                 self.cut_face(context)
+                self.finish()
                 gui.draw_handle_remove()
                 return {'FINISHED'}
 
@@ -970,6 +1020,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.loop_mode = True
                 self.loop_separate = event.shift
                 self.cut_break(context)
+                self.finish()
                 gui.draw_handle_remove()
                 return {'FINISHED'}
 
@@ -980,7 +1031,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                     self.full_width = True
                 else:
                     self.full_width = False
-                self.print_hint()
+                # self.print_hint()
                 return {'RUNNING_MODAL'}
 
 
@@ -994,7 +1045,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
         elif event.type == 'WHEELUPMOUSE' and event.ctrl:
             self.snaps += 1
             self.move_cut_point( context, event)
-            self.print_hint()
+            # self.print_hint()
             return {'RUNNING_MODAL'}
 
         elif event.type == 'WHEELDOWNMOUSE' and event.ctrl:
@@ -1002,7 +1053,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
             if self.snaps < 1:
                 self.snaps = 1
             self.move_cut_point( context, event)
-            self.print_hint()
+            # self.print_hint()
             return {'RUNNING_MODAL'}
 
         elif event.type == 'LEFT_BRACKET':
@@ -1010,13 +1061,13 @@ class BDSM_Mesh_Face_Cutter(Operator):
             if self.snaps < 1:
                 self.snaps = 1
             self.move_cut_point( context, event)
-            self.print_hint()
+            # self.print_hint()
             return {'RUNNING_MODAL'}
 
         elif event.type == 'RIGHT_BRACKET':
             self.snaps += 1
             self.move_cut_point( context, event)
-            self.print_hint()
+            # self.print_hint()
             return {'RUNNING_MODAL'}
 
         elif event.type == 'E':
@@ -1024,7 +1075,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.handlers.pop()
                 self.handlers.append(self.handle_linked)
                 self.draw_linked_mode(context, event)
-                self.print_hint()
+                # self.print_hint()
                 self.draw_cuts()
                 return {'RUNNING_MODAL'}
 
@@ -1036,6 +1087,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
         if event.type in {'Q','RET','NUMPAD_ENTER'}:
             if event.value == 'PRESS':
                 self.cut_face(context)
+                self.finish()
                 gui.draw_handle_remove()
                 self.cleanup()
                 return {'FINISHED'}
@@ -1047,6 +1099,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.loop_separate = event.shift
                 self.cut_break(context)
                 self.cleanup()
+                self.finish()
                 gui.draw_handle_remove()
                 return {'FINISHED'}
 
@@ -1057,7 +1110,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                     self.full_width = True
                 else:
                     self.full_width = False
-                self.print_hint()
+                # self.print_hint()
                 self.process_move( context, event)
                 return {'RUNNING_MODAL'}
 
@@ -1073,7 +1126,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
             if event.value == 'PRESS':
                 self.handlers.append(self.handle_linked)
                 self.draw_linked_mode(context, event)
-                self.print_hint()
+                # self.print_hint()
                 self.draw_cuts()
                 return {'RUNNING_MODAL'}
 
@@ -1084,6 +1137,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.loop_mode = True
                 self.cut_face(context)
                 self.cleanup()
+                self.finish()
                 gui.draw_handle_remove()
                 return {'FINISHED'}
 
@@ -1094,7 +1148,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                     #self.cutlines = []
                     self.aligning = None
                     self.handlers.append(self.handle_cut)
-                    self.print_hint()
+                    # self.print_hint()
                     #  added for empty moving
                     self.move_cut_point( context, event)
                     #self.process(context)
@@ -1108,6 +1162,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
 
         elif event.type == 'ESC':
             if event.value == 'PRESS':
+                self.finish()
                 gui.draw_handle_remove()
                 return {'CANCELLED'}
 
@@ -1170,6 +1225,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
             if event.value == 'PRESS':
                 self.cut_face(context)
                 self.cleanup()
+                self.finish()
                 gui.draw_handle_remove()
                 return {'FINISHED'}
 
@@ -1179,6 +1235,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.loop_separate = event.shift
                 self.cut_break(context)
                 self.cleanup()
+                self.finish()
                 gui.draw_handle_remove()
                 return {'FINISHED'}
 
@@ -1188,7 +1245,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.handlers.pop()
                 self.temp_point = None
                 self.draw_cuts()
-                self.print_hint()
+                # self.print_hint()
                 self.process_move( context, event)
                 return {'RUNNING_MODAL'}
 
@@ -1198,6 +1255,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 self.loop_mode = True
                 self.cut_face(context)
                 self.cleanup()
+                self.finish()
                 gui.draw_handle_remove()
                 return {'FINISHED'}
 
@@ -1232,7 +1290,7 @@ class BDSM_Mesh_Face_Cutter(Operator):
             if event.value == 'PRESS':
                 gui.lines2 = []
                 self.handlers.pop()
-                self.print_hint()
+                # self.print_hint()
                 self.process_move( context, event)
                 self.draw_cuts()
                 return {'RUNNING_MODAL'}
@@ -1336,6 +1394,8 @@ class BDSM_Mesh_Face_Cutter(Operator):
 
     def modal(self, context, event):
         context.area.tag_redraw()
+        if event.type == 'MOUSEMOVE':
+            update_HUD_location(self, event)
         p = self.handlers[-1]
 
         if event.alt:
@@ -1417,6 +1477,10 @@ class BDSM_Mesh_Face_Cutter(Operator):
 
 
     def invoke(self, context, event):
+        self.active = context.active_object
+        self.active.update_from_editmode()
+        self.coords = []
+        init_cursor(self, event)
         if context.edit_object:
             # self.bm = self.get_bm()
 
@@ -1446,14 +1510,15 @@ class BDSM_Mesh_Face_Cutter(Operator):
             self.loop_separate = False
             self.mid_current = None
             self.temp_point = None
+            self.align_active = False
             gui.lines2 = []
             gui.textpos = []
-
+            self.area = context.area
+            self.HUD = bpy.types.SpaceView3D.draw_handler_add(self.draw_HUD, (context, ), 'WINDOW', 'POST_PIXEL')
             context.window_manager.modal_handler_add(self)
             gui.draw_handle_add((self, context))
             gui.text_handle_add((self, context))
-            self.print_hint()
-
+            # self.print_hint()
             self.process(context)
             return {'RUNNING_MODAL'}
         else:
@@ -1476,7 +1541,8 @@ class BDSM_Mesh_Face_Cutter(Operator):
                 area.spaces.active.region_3d.update()
 
 
-
+    def finish(self):
+        bpy.types.SpaceView3D.draw_handler_remove(self.HUD, 'WINDOW')
 
 
     def cut_face_each(self, context):
