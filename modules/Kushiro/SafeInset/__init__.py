@@ -16,39 +16,12 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 # Created by Kushiro
-
-
 import bpy
-
-
-from bpy.props import (
-        FloatProperty,
-        IntProperty,
-        BoolProperty,
-        EnumProperty,
-        )
-
-
-#from . import helper
-from . import grid_modeler
-from . import geo
-from . import pref
-from . import plane
-from . import gui
-from . import keys
-
-import importlib
-
+from . import safe_inset
 
 def register():
-    importlib.reload(grid_modeler)    
-    importlib.reload(geo)
-    importlib.reload(gui)
-    importlib.reload(plane)
-    importlib.reload(pref)
-    importlib.reload(keys)
-    bpy.utils.register_class(grid_modeler.BDSM_Mesh_Face_GridModeler)
-
-
+    bpy.utils.register_class(safe_inset.BDSM_Mesh_Face_SafeInset)
 def unregister():
-    bpy.utils.unregister_class(grid_modeler.BDSM_Mesh_Face_GridModeler)
+    bpy.utils.unregister_class(safe_inset.BDSM_Mesh_Face_SafeInset)
+
+

@@ -4,8 +4,8 @@ bl_info = {
     'description': 'Collection of context sensitive tools',
     'blender': (4, 0, 0),
     'location': 'View3D',
-    'version': (0, 0, 3),
-    'doc_url': 'https://github.com/nguyendinhat/RizomUV_Bridge_for_Blender_MacOS',
+    'version': (0, 0, 4),
+    'doc_url': 'https://github.com/nguyendinhat/BDSM',
     'tracker_url': 'https://github.com/nguyendinhat/bdsm/issues',
     'wiki_url': 'https://github.com/nguyendinhat/',
     'warning': '',
@@ -16,7 +16,7 @@ import bpy
 from .icons import icons
 from .keymaps import shortcut
 from .modules import EdgeFlow, Machine, MeshF2, ModifierTool, Primitive
-from .modules.Kushiro import FaceRegulator, FaceCutter, GridModeler
+from .modules.Kushiro import FaceRegulator, FaceCutter, GridModeler, AttackAlign, QuickBrigde, SafeInset, SurfaceInflate, VisualAxis
 
 from .context import addon, context
 from .operators import(
@@ -161,6 +161,11 @@ modules = [
     FaceRegulator,
     FaceCutter,
     GridModeler,
+    AttackAlign,
+    QuickBrigde,
+    SafeInset,
+    SurfaceInflate,
+    VisualAxis,
     Machine
 ]
 

@@ -230,7 +230,7 @@ def draw_3d(self, context):
     if self.paste != None:
         coord2 = []
         offset = self.calc_paste_offset()
-        for item in GridModelerOperator.clipboard:
+        for item in BDSM_Mesh_Face_GridModeler.clipboard:
             item.create_edges()
             selected = item.select
             for (p1, p2) in zip(item.loop, item.loop2):
@@ -471,11 +471,18 @@ def get_collection_objects():
     return []
     '''
 
-class GridModelerOperator(bpy.types.Operator):
+class BDSM_Mesh_Face_GridModeler(bpy.types.Operator):
     """Tooltip"""
-    bl_idname = "mesh.grid_modeler_operator"
-    bl_label = "Grid Modeler"
+    bl_idname = "mesh.bdsm_mesh_face_gridmodeler"
+    bl_label = "BDSM Mesh Face Grid Modeler"
     bl_options = {"REGISTER", "UNDO"}
+    bl_description = """
+        BDSM Mesh Face Grid Modeler - Created by Kushiro
+        Grid Modeler is a convenient tool to create 3D model easily.
+        Grid Modeler let you Boolean Cut by drawn shape or Create mesh on top of each other.
+        It is a new modeling workflow in blender.
+        It is proven and very efficient.
+    """
     #, "GRAB_CURSOR", "BLOCKING"
 
 
@@ -1023,10 +1030,10 @@ class GridModelerOperator(bpy.types.Operator):
 
     @classmethod
     def remove_draw(cls):
-        if GridModelerOperator.handle3d != None:
+        if BDSM_Mesh_Face_GridModeler.handle3d != None:
             bpy.types.SpaceView3D.draw_handler_remove(
-                GridModelerOperator.handle3d, 'WINDOW')
-            GridModelerOperator.handle3d = None
+                BDSM_Mesh_Face_GridModeler.handle3d, 'WINDOW')
+            BDSM_Mesh_Face_GridModeler.handle3d = None
 
     @classmethod
     def poll(cls, context):
@@ -1470,14 +1477,14 @@ class GridModelerOperator(bpy.types.Operator):
     def update_guide(self, context):
         source = [self.source] + self.other_source
         sn = self.source.normal.copy()
-        if GridModelerOperator.mode_A:
-            size = GridModelerOperator.size
+        if BDSM_Mesh_Face_GridModeler.mode_A:
+            size = BDSM_Mesh_Face_GridModeler.size
         else:
-            size = GridModelerOperator.size_rel
+            size = BDSM_Mesh_Face_GridModeler.size_rel
 
-        mode_A = GridModelerOperator.mode_A
+        mode_A = BDSM_Mesh_Face_GridModeler.mode_A
 
-        coord_mode = GridModelerOperator.coord_mode
+        coord_mode = BDSM_Mesh_Face_GridModeler.coord_mode
 
         ret = plane.get_plane(source, sn, self.main_edge,
             size, mode_A, self.scale_up, self.scale_up_rel, self.shift_vert,
@@ -1510,8 +1517,8 @@ class GridModelerOperator(bpy.types.Operator):
         hori = (h2-h1).normalized()
         ver = (v2-v1).normalized()
 
-        size = GridModelerOperator.size
-        if GridModelerOperator.mode_A == False:
+        size = BDSM_Mesh_Face_GridModeler.size
+        if BDSM_Mesh_Face_GridModeler.mode_A == False:
             length = (h2-h1).length / size
             count = size
             vcount = math.ceil( (v2-v1).length / length)
@@ -1767,7 +1774,7 @@ class GridModelerOperator(bpy.types.Operator):
         main, vertical = self.space
         z_axis = main.cross(vertical)
         #self.currentloop = []
-        size = GridModelerOperator.circle_cut
+        size = BDSM_Mesh_Face_GridModeler.circle_cut
         deg = 360 / size
         ang = math.radians(deg)
         e1 = p2-p1
@@ -1955,7 +1962,7 @@ class GridModelerOperator(bpy.types.Operator):
     def finish_action(self, context):
         #try:
         self.finish()
-        GridModelerOperator.remove_draw()
+        BDSM_Mesh_Face_GridModeler.remove_draw()
         bm = geo.get_bm(context)
 
         is_vert_mode, is_edge_mode, is_face_mode = context.tool_settings.mesh_select_mode
@@ -2637,7 +2644,7 @@ class GridModelerOperator(bpy.types.Operator):
         #cen = self.calc_paste_cen()
         #rot = self.calc_paste_rotation()
 
-        for item in GridModelerOperator.clipboard:
+        for item in BDSM_Mesh_Face_GridModeler.clipboard:
             loop = item.loop
             #loop2 = [(p1+offset, p2+offset) for p1, p2 in loop]
             loop2 = []
@@ -3545,7 +3552,7 @@ class GridModelerOperator(bpy.types.Operator):
             self.array = False
             self.array_circle = False
             self.handlers.pop()
-            GridModelerOperator.clipboard = None
+            BDSM_Mesh_Face_GridModeler.clipboard = None
             return {'RUNNING_MODAL'}
 
         elif event.type == 'ESC':
@@ -3555,7 +3562,7 @@ class GridModelerOperator(bpy.types.Operator):
             self.array_count = 0
             self.array = False
             self.handlers.pop()
-            GridModelerOperator.clipboard = None
+            BDSM_Mesh_Face_GridModeler.clipboard = None
             return {'RUNNING_MODAL'}
 
         elif event.type == 'WHEELUPMOUSE' or (event.type == 'RIGHT_BRACKET' and event.value == 'PRESS') \
@@ -3585,7 +3592,7 @@ class GridModelerOperator(bpy.types.Operator):
             return
         cen, loc = self.paste
         main = loc - cen
-        GridModelerOperator.clipboard = []
+        BDSM_Mesh_Face_GridModeler.clipboard = []
         sel = []
         for item in self.loops:
             if item.select:
@@ -3627,7 +3634,7 @@ class GridModelerOperator(bpy.types.Operator):
                         loop2.append(a1)
 
                 item2.loop = loop2
-                GridModelerOperator.clipboard.append(item2)
+                BDSM_Mesh_Face_GridModeler.clipboard.append(item2)
 
     def get_selected(self):
         if not self.loops:
@@ -3652,7 +3659,7 @@ class GridModelerOperator(bpy.types.Operator):
 
     def array_pending(self, loc):
         sel = self.get_all_selected()
-        GridModelerOperator.clipboard = sel
+        BDSM_Mesh_Face_GridModeler.clipboard = sel
         cen = self.calc_paste_cen()
         self.paste = (cen, loc)
 
@@ -3909,10 +3916,10 @@ class GridModelerOperator(bpy.types.Operator):
             return {'RUNNING_MODAL'}
 
         elif event.type == 'F6':
-            if GridModelerOperator.coord_mode:
-                GridModelerOperator.coord_mode = False
+            if BDSM_Mesh_Face_GridModeler.coord_mode:
+                BDSM_Mesh_Face_GridModeler.coord_mode = False
             else:
-                GridModelerOperator.coord_mode = True
+                BDSM_Mesh_Face_GridModeler.coord_mode = True
             self.update_guide(context)
             return {'RUNNING_MODAL'}
 
@@ -4050,7 +4057,7 @@ class GridModelerOperator(bpy.types.Operator):
 
             elif event.type == 'X' and event.ctrl:
                 self.copy_loop()
-                if GridModelerOperator.clipboard:
+                if BDSM_Mesh_Face_GridModeler.clipboard:
                     self.delete_shape()
                 return {'RUNNING_MODAL'}
 
@@ -4058,7 +4065,7 @@ class GridModelerOperator(bpy.types.Operator):
                 self.report({'INFO'},'2')
                 self.edit_shape_move = True
                 self.copy_loop()
-                if GridModelerOperator.clipboard:
+                if BDSM_Mesh_Face_GridModeler.clipboard:
                     self.delete_shape()
                     loc = self.calc_pos(context, event)
                     self.pending_paste(loc)
@@ -4278,54 +4285,54 @@ class GridModelerOperator(bpy.types.Operator):
         return loop2
 
     def copy_loop(self):
-        #GridModelerOperator.clipboard = [e for e in self.loops if e.select]
-        GridModelerOperator.clipboard = [e.copy() for e in self.loops if e.select]
-        GridModelerOperator.clipboard_sn = self.source.normal.copy()
+        #BDSM_Mesh_Face_GridModeler.clipboard = [e for e in self.loops if e.select]
+        BDSM_Mesh_Face_GridModeler.clipboard = [e.copy() for e in self.loops if e.select]
+        BDSM_Mesh_Face_GridModeler.clipboard_sn = self.source.normal.copy()
         main_hori, main_vert = self.space_point
         m1, m2 = main_hori
-        GridModelerOperator.clipboard_main = (m2 - m1).normalized()
+        BDSM_Mesh_Face_GridModeler.clipboard_main = (m2 - m1).normalized()
 
     def calc_paste_rotation(self):
         cn = None
-        if GridModelerOperator.clipboard_sn == None:
+        if BDSM_Mesh_Face_GridModeler.clipboard_sn == None:
             cn = self.source.normal.copy()
         else:
-            cn = GridModelerOperator.clipboard_sn
+            cn = BDSM_Mesh_Face_GridModeler.clipboard_sn
         rot = cn.rotation_difference(self.source.normal)
         return rot
 
     def calc_paste_cen(self):
-        item = GridModelerOperator.clipboard[0]
+        item = BDSM_Mesh_Face_GridModeler.clipboard[0]
         return item.center
 
     def pending_paste(self, loc):
-        if GridModelerOperator.clipboard == None or (not GridModelerOperator.clipboard):
+        if BDSM_Mesh_Face_GridModeler.clipboard == None or (not BDSM_Mesh_Face_GridModeler.clipboard):
             return False
 
         cen = self.calc_paste_cen()
-        cn = GridModelerOperator.clipboard_sn
+        cn = BDSM_Mesh_Face_GridModeler.clipboard_sn
 
         if cn != None and geo.same_direction(cn, self.source.normal) == False:
             rot = self.calc_paste_rotation()
-            for item in GridModelerOperator.clipboard:
+            for item in BDSM_Mesh_Face_GridModeler.clipboard:
                 loop = item.loop
                 item.loop = self.rotate_loop_single(rot, loop, cen)
-            GridModelerOperator.clipboard_sn = self.source.normal.copy()
+            BDSM_Mesh_Face_GridModeler.clipboard_sn = self.source.normal.copy()
 
-            if GridModelerOperator.clipboard_main != None:
+            if BDSM_Mesh_Face_GridModeler.clipboard_main != None:
                 mat = rot.to_matrix().to_4x4()
-                GridModelerOperator.clipboard_main = mat @ GridModelerOperator.clipboard_main
+                BDSM_Mesh_Face_GridModeler.clipboard_main = mat @ BDSM_Mesh_Face_GridModeler.clipboard_main
 
         main_hori, _ = self.space_point
         m1, m2 = main_hori
         main2 = (m2-m1).normalized()
-        gmain = GridModelerOperator.clipboard_main
+        gmain = BDSM_Mesh_Face_GridModeler.clipboard_main
         if gmain != None and geo.same_direction(gmain, main2) == False:
             rot = gmain.rotation_difference(main2)
-            for item in GridModelerOperator.clipboard:
+            for item in BDSM_Mesh_Face_GridModeler.clipboard:
                 loop = item.loop
                 item.loop = self.rotate_loop_single(rot, loop, cen)
-            GridModelerOperator.clipboard_main = main2
+            BDSM_Mesh_Face_GridModeler.clipboard_main = main2
 
         self.paste = (cen, loc)
         return True
@@ -4567,15 +4574,15 @@ class GridModelerOperator(bpy.types.Operator):
                 return {'RUNNING_MODAL'}
 
             elif event.type == 'F6':
-                if GridModelerOperator.coord_mode:
-                    GridModelerOperator.coord_mode = False
+                if BDSM_Mesh_Face_GridModeler.coord_mode:
+                    BDSM_Mesh_Face_GridModeler.coord_mode = False
                 else:
-                    GridModelerOperator.coord_mode = True
+                    BDSM_Mesh_Face_GridModeler.coord_mode = True
                 self.update_guide(context)
                 return {'RUNNING_MODAL'}
 
             elif event.type == 'A':
-                GridModelerOperator.mode_A = not GridModelerOperator.mode_A
+                BDSM_Mesh_Face_GridModeler.mode_A = not BDSM_Mesh_Face_GridModeler.mode_A
                 self.update_guide(context)
                 return {'RUNNING_MODAL'}
 
@@ -4701,34 +4708,34 @@ class GridModelerOperator(bpy.types.Operator):
 
     def basic_scroll(self, context, event, num):
         if event.ctrl:
-            if GridModelerOperator.mode_A:
-                GridModelerOperator.size += num
-                if GridModelerOperator.size < 2:
-                    GridModelerOperator.size = 2
+            if BDSM_Mesh_Face_GridModeler.mode_A:
+                BDSM_Mesh_Face_GridModeler.size += num
+                if BDSM_Mesh_Face_GridModeler.size < 2:
+                    BDSM_Mesh_Face_GridModeler.size = 2
             else:
-                GridModelerOperator.size_rel += num
-                if GridModelerOperator.size_rel < 2:
-                    GridModelerOperator.size_rel = 2
+                BDSM_Mesh_Face_GridModeler.size_rel += num
+                if BDSM_Mesh_Face_GridModeler.size_rel < 2:
+                    BDSM_Mesh_Face_GridModeler.size_rel = 2
 
             self.update_guide(context)
             return {'RUNNING_MODAL'}
         elif event.shift:
-            GridModelerOperator.circle_cut += num
-            if GridModelerOperator.circle_cut < 3:
-                GridModelerOperator.circle_cut = 3
+            BDSM_Mesh_Face_GridModeler.circle_cut += num
+            if BDSM_Mesh_Face_GridModeler.circle_cut < 3:
+                BDSM_Mesh_Face_GridModeler.circle_cut = 3
             self.draw_circle(context)
             return {'RUNNING_MODAL'}
         elif event.alt:
             if self.mode_A:
                 self.scale_up += num
-                if GridModelerOperator.grid_size + num > 0:
-                    GridModelerOperator.grid_size +=num
+                if BDSM_Mesh_Face_GridModeler.grid_size + num > 0:
+                    BDSM_Mesh_Face_GridModeler.grid_size +=num
                 if self.scale_up < 0:
                     self.scale_up = 0
             else:
                 self.scale_up_rel += num
-                if GridModelerOperator.grid_size + num > 0:
-                    GridModelerOperator.grid_size +=num
+                if BDSM_Mesh_Face_GridModeler.grid_size + num > 0:
+                    BDSM_Mesh_Face_GridModeler.grid_size +=num
                 if self.scale_up_rel < 0:
                     self.scale_up_rel = 0
             self.update_guide(context)
@@ -4919,7 +4926,7 @@ class GridModelerOperator(bpy.types.Operator):
             self.text_size = preference['textsize']
             self.text_color = preference['textcolor']
             self.operation_mode = preference['default_ope']
-            GridModelerOperator.mode_A = preference['bool_abs']
+            BDSM_Mesh_Face_GridModeler.mode_A = preference['bool_abs']
             self.show_keys = preference['bool_showkey']
             self.text_pos_x = preference['text_pos_x']
             self.color_grid_line = preference['line_color']
@@ -4942,8 +4949,8 @@ class GridModelerOperator(bpy.types.Operator):
             
             '''
             if self.projection != None:
-                GridModelerOperator.mode_A = False
-                GridModelerOperator.size_rel = 10
+                BDSM_Mesh_Face_GridModeler.mode_A = False
+                BDSM_Mesh_Face_GridModeler.size_rel = 10
             '''
 
             self.handlers.append(self.overall)
@@ -4958,8 +4965,8 @@ class GridModelerOperator(bpy.types.Operator):
                 print('guide error')
                 return {'CANCELLED'}
 
-            GridModelerOperator.remove_draw()
-            GridModelerOperator.handle3d = bpy.types.SpaceView3D.draw_handler_add(
+            BDSM_Mesh_Face_GridModeler.remove_draw()
+            BDSM_Mesh_Face_GridModeler.handle3d = bpy.types.SpaceView3D.draw_handler_add(
                 draw_3d, args, 'WINDOW', 'POST_VIEW')
             self.area = context.area
             self.HUD = bpy.types.SpaceView3D.draw_handler_add(
@@ -5016,7 +5023,7 @@ class GridModelerOperator(bpy.types.Operator):
         return txtall
 
     def base_text(self, context):
-        if GridModelerOperator.mode_A:
+        if BDSM_Mesh_Face_GridModeler.mode_A:
             mode = 'Absolute size'
         else:
             mode = 'Relative size'
@@ -5035,7 +5042,7 @@ class GridModelerOperator(bpy.types.Operator):
         if self.con_mode != None:
             txtall.append( '[Construction line mode]')
 
-        if GridModelerOperator.coord_mode:
+        if BDSM_Mesh_Face_GridModeler.coord_mode:
             txtall.append( '[Global Alignment]')
 
         if self.snap_disable:
@@ -5044,13 +5051,13 @@ class GridModelerOperator(bpy.types.Operator):
             txtall.append( '[Snap to shape]')
 
         if self.circle != None:
-            txtall.append( 'Circle edges : ' + str(GridModelerOperator.circle_cut))
+            txtall.append( 'Circle edges : ' + str(BDSM_Mesh_Face_GridModeler.circle_cut))
             txtall.append( '  (Shift Mouse Scroll to change)')
 
-        if GridModelerOperator.mode_A:
-            size = GridModelerOperator.size * 2
+        if BDSM_Mesh_Face_GridModeler.mode_A:
+            size = BDSM_Mesh_Face_GridModeler.size * 2
         else:
-            size = GridModelerOperator.size_rel
+            size = BDSM_Mesh_Face_GridModeler.size_rel
 
 
         #txtall.append( 'Operation (S key): ' + cut)
@@ -5144,7 +5151,7 @@ class GridModelerOperator(bpy.types.Operator):
         self.clear_mark(context)
         '''
         self.finish()
-        GridModelerOperator.remove_draw()
+        BDSM_Mesh_Face_GridModeler.remove_draw()
 
         '''
         if self.bm != None:
@@ -5213,13 +5220,13 @@ class GridModelerOperator(bpy.types.Operator):
 
     def status_tool_save(self):
         shapes = [p.copy() for p in self.loops]
-        GridModelerOperator.tmp_plane_save = [self.source, self.other_source,
+        BDSM_Mesh_Face_GridModeler.tmp_plane_save = [self.source, self.other_source,
             self.main_edge, self.scale_up, self.scale_up_rel, self.shift_vert, shapes]
 
     def status_tool_load(self, context):
-        if GridModelerOperator.tmp_plane_save != None:
+        if BDSM_Mesh_Face_GridModeler.tmp_plane_save != None:
             self.virtualface = True
-            self.source, self.other_source, self.main_edge, self.scale_up, self.scale_up_rel, self.shift_vert, loops = GridModelerOperator.tmp_plane_save
+            self.source, self.other_source, self.main_edge, self.scale_up, self.scale_up_rel, self.shift_vert, loops = BDSM_Mesh_Face_GridModeler.tmp_plane_save
             self.loops = [p.copy() for p in loops]
             self.update_guide(context)
 
