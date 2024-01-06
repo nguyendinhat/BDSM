@@ -1,11 +1,15 @@
 import bpy
-from .operators import punnchit, op_test
+from .operators import punnchit, normals
 from .interface import draw
-from .interface.menus import extrude_menu, menu_func
 
 classes = [
     draw.BDSM_Draw_Labels_PunchIt,
     punnchit.BDSM_Mesh_Extrude_PunchIt,
+
+    normals.BDSM_Mesh_Face_Normal_Clear,
+    normals.BDSM_Mesh_Face_Normal_Flatten,
+    normals.BDSM_Mesh_Face_Normal_Straighten,
+    normals.BDSM_Mesh_Face_Normal_Transfer,
 ]
 
 def register():

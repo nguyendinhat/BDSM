@@ -220,6 +220,31 @@ def draw_split_row(self, layout, prop='prop', text='', label='Label', factor=0.2
     return row
 
 
+def draw_mesh_wire(batch, color=(1, 1, 1), width=1, alpha=1, xray=True, modal=True):
+    def draw():
+        nonlocal batch
+        coords, indices = batch
+
+        gpu.state.depth_test_set('NONE' if xray else 'LESS_EQUAL')
+        gpu.state.blend_set('ALPHA')
+
+        shader = gpu.shader.from_builtin('POLYLINE_UNIFORM_COLOR')
+        shader.uniform_float("color", (*color, alpha))
+        shader.uniform_float("lineWidth", width)
+        shader.uniform_float("viewportSize", gpu.state.scissor_get()[2:])
+        shader.bind()
+
+        b = batch_for_shader(shader, 'LINES', {"pos": coords}, indices=indices)
+        b.draw(shader)
+
+        del shader
+        del b
+
+    if modal:
+        draw()
+
+    else:
+        bpy.types.SpaceView3D.draw_handler_add(draw, (), 'WINDOW', 'POST_VIEW')
 
 
 

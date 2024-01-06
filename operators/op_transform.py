@@ -26,13 +26,19 @@ class BDSM_Transform_Move(Operator):
                 if space.type == 'VIEW_3D':
                     # Make sure active tool is set to select
                     bpy.ops.wm.tool_set_by_id( name='builtin.select_box')
-
-                    if space.show_gizmo_object_translate:
-                        bpy.ops.transform.translate('INVOKE_DEFAULT')
-                    else:
-                        space.show_gizmo_object_translate = True
-                        space.show_gizmo_object_rotate = False
-                        space.show_gizmo_object_scale = False
+        # bpy.ops.transform.translate(
+        #     'INVOKE_DEFAULT',
+        #     orient_type = 'NORMAL',
+        #     orient_matrix_type = 'NORMAL',
+        #     constraint_axis = (False, False, True),
+        #     alt_navigation = True
+        # )
+        # if space.show_gizmo_object_translate:
+        #     bpy.ops.transform.translate('INVOKE_DEFAULT')
+        # else:
+                    space.show_gizmo_object_translate = True
+                    space.show_gizmo_object_rotate = False
+                    space.show_gizmo_object_scale = False
         return{'FINISHED'}
 
 class BDSM_Transform_Rotate(Operator):
@@ -46,14 +52,19 @@ class BDSM_Transform_Rotate(Operator):
             for space in area.spaces:
                 if space.type == 'VIEW_3D':
                     # Make sure active tool is set to select
-                    bpy.ops.wm.tool_set_by_id( name='builtin.select_box')
-
-                    if space.show_gizmo_object_rotate:
-                        bpy.ops.transform.rotate('INVOKE_DEFAULT')
-                    else:
-                        space.show_gizmo_object_translate = False
-                        space.show_gizmo_object_rotate = True
-                        space.show_gizmo_object_scale = False
+        # bpy.ops.wm.tool_set_by_id( name='builtin.select_box')
+        # bpy.ops.transform.rotate(
+        #     'INVOKE_DEFAULT',
+        #     orient_axis='Z',
+        #     orient_type='VIEW',
+        #     orient_matrix_type='VIEW',
+        # )
+        # if space.show_gizmo_object_rotate:
+        #     bpy.ops.transform.rotate('INVOKE_DEFAULT')
+        # else:
+                    space.show_gizmo_object_translate = False
+                    space.show_gizmo_object_rotate = True
+                    space.show_gizmo_object_scale = False
         return{'FINISHED'}
 
 class BDSM_Transform_Scale(Operator):
@@ -63,19 +74,25 @@ class BDSM_Transform_Scale(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        areas = bpy.context.workspace.screens[0].areas
-        for area in areas:
-            for space in area.spaces:
-                if space.type == 'VIEW_3D':
+        # areas = bpy.context.workspace.screens[0].areas
+        # for area in areas:
+        #     for space in area.spaces:
+                # if space.type == 'VIEW_3D':
                     # Make sure active tool is set to select
-                    bpy.ops.wm.tool_set_by_id(name='builtin.select_box')
-
-                    if space.show_gizmo_object_scale:
-                        bpy.ops.transform.resize('INVOKE_DEFAULT')
-                    else:
-                        space.show_gizmo_object_translate = False
-                        space.show_gizmo_object_rotate = False
-                        space.show_gizmo_object_scale = True
+        bpy.ops.wm.tool_set_by_id(name='builtin.select_box')
+        bpy.ops.transform.resize(
+            'INVOKE_DEFAULT',
+            orient_type = 'NORMAL',
+            orient_matrix_type = 'NORMAL',
+            constraint_axis = (True, True, False),
+            alt_navigation = True
+        )
+        # if space.show_gizmo_object_scale:
+        #     bpy.ops.transform.resize('INVOKE_DEFAULT')
+        # else:
+        #     space.show_gizmo_object_translate = False
+        #     space.show_gizmo_object_rotate = False
+        #     space.show_gizmo_object_scale = True
         return{'FINISHED'}
 
 class BDSM_Transform_Rotate_Step(Operator):
@@ -147,3 +164,29 @@ class BDSM_Transform_Rotate_Step(Operator):
                                  use_proportional_connected=False, use_proportional_projected=False)
 
         return {"FINISHED"}
+
+
+
+# bpy.ops.transform.resize(
+#     value=(1.19012, 1.19012, 1),
+
+#     mirror=False,
+#     use_proportional_edit=False,
+#     proportional_edit_falloff='SMOOTH',
+#     proportional_size=1,
+#     use_proportional_connected=False,
+#     use_proportional_projected=False, snap=False, snap_elements={'INCREMENT'},
+#     use_snap_project=False, snap_target='CLOSEST',
+#     use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True, use_snap_selectable=False)
+
+# bpy.ops.transform.rotate(
+#     value=4.14682,
+    
+    
+#     orient_matrix=((-0.475625, -0.879648, 4.47035e-07), 
+#                    (0.434495, -0.23493, 0.869495), (-0.76485, 0.413554, 0.493941)), 
+#     mirror=False, use_proportional_edit=False, 
+#     proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, 
+#     use_proportional_projected=False, snap=False, snap_elements={'INCREMENT'}, use_snap_project=False, 
+#     snap_target='CLOSEST', use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True, use_snap_selectable=False, 
+#     release_confirm=True)

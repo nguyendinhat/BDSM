@@ -1,5 +1,19 @@
 import sys
 
+def build_mesh_graph_normal(bm, debug=False):
+    mesh_graph = {}
+    for v in bm.verts:
+        mesh_graph[v.index] = []
+
+    for edge in bm.edges:
+        mesh_graph[edge.verts[0].index].append((edge.verts[1].index, edge.verts[1].select, edge.select))
+        mesh_graph[edge.verts[1].index].append((edge.verts[0].index, edge.verts[0].select, edge.select))
+
+    if debug:
+        for idx in mesh_graph:
+            print(idx, mesh_graph[idx])
+
+    return mesh_graph
 
 def build_mesh_graph(verts, edges, topo=True):
     mg = {}

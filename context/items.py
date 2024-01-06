@@ -200,8 +200,10 @@ def get_mode_props(self, context):
     ('TYPE_0', 'Type 9', '', 'EVENT_F9', 12),
 ]
 
-
-
+get_bevel_mode = [
+    ('VERT', 'VERT', ''),
+    ('EDGE', 'EDGE', ''),
+]
 
 
 

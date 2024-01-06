@@ -67,7 +67,11 @@ class BDSM_AddonPreferences(AddonPreferences):
         default=True,
         description='Edit Geometry flow'
     )
-
+    tg_edit_geometry_normals: BoolProperty(
+        name='Edit Geometry Normals',
+        default=True,
+        description='Edit Geometry Normals'
+    )
     snap_mode_enums:EnumProperty(
         items=(items.get_snap_mode),
         name='Snap mode',

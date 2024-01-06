@@ -4,7 +4,7 @@ bl_info = {
     'description': 'Collection of context sensitive tools',
     'blender': (4, 0, 0),
     'location': 'View3D',
-    'version': (0, 0, 4),
+    'version': (0, 0, 5),
     'doc_url': 'https://github.com/nguyendinhat/BDSM',
     'tracker_url': 'https://github.com/nguyendinhat/bdsm/issues',
     'wiki_url': 'https://github.com/nguyendinhat/',

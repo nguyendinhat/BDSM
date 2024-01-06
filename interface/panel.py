@@ -558,6 +558,24 @@ class VIEW3D_PT_BDSM_PANEL(Panel):
                         col.operator('mesh.bdsm_mesh_edge_curve', text='Edge Curve', icon_value=get_icon_id('EdgeCurve'))
                     col.operator('mesh.bdsm_mesh_relax', text='Relax', icon_value=get_icon_id('Relax'))
 
+                #Normalbpy.ops.machin3.normal_clear()
+                if props.selection_enums in ['SELECT_FACE','SELECT_ELEMEMT']:
+                    box = layout.box()
+                    col = box.column(align=True)
+                    row = col.row(align=True)
+                    row.label(text='Normal:', icon='NORMALIZE_FCURVES')
+                    row.prop(prefs, 'tg_edit_geometry_normals', text='', emboss=False, icon_value=get_icon_id('ToggleON' if prefs.tg_edit_geometry_flow else 'ToggleOFF'))
+                    row = col.row(align=True)
+                    row.operator('mesh.faces_shade_flat', text='Flat', icon='NORMALS_FACE')
+                    row.operator('mesh.faces_shade_smooth', text='Smooth',  icon='SNAP_NORMAL')
+                    col = box.column(align=True)
+                    row = col.row(align=True)
+                    row.operator('mesh.bdsm_mesh_face_normal_flatten', text='Flatten')
+                    row.operator('mesh.bdsm_mesh_face_normal_straighten', text='Straighten')
+                    row = col.row(align=True)
+                    row.operator('mesh.bdsm_mesh_face_normal_transfer', text='Transfer')
+                    row.operator('mesh.bdsm_mesh_face_normal_clear', text='Clear')
+
                 #Merge
                 box = layout.box()
                 col = box.column(align=True)
