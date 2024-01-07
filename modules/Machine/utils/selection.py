@@ -179,7 +179,7 @@ def get_boundary_edges(faces, region_to_loop=False):
 
 #=====[PUNCHit]=====
 
-def get_selection_islands_normal(bm, debug=False):
+def get_selection_islands(bm, debug=False):
     selected = [f for f in bm.faces if f.select]
 
     if debug:
