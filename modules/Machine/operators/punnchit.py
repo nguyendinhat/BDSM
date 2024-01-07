@@ -7,7 +7,7 @@ import bmesh
 from mathutils import Vector
 from mathutils.geometry import intersect_line_line, intersect_point_line
 from math import sqrt
-from ..utils.selection import get_selection_islands, get_boundary_edges, get_edges_vert_sequences, get_selected_vert_sequences
+from ..utils.selection import get_selection_islands_punchit, get_boundary_edges, get_edges_vert_sequences, get_selected_vert_sequences
 from ..utils.property import rotate_list, shorten_float_string
 from ..utils.math import average_normals, average_locations, get_center_between_verts, dynamic_format
 from ..utils.system import printd
@@ -592,7 +592,7 @@ class BDSM_Mesh_Extrude_PunchIt(Operator):
                 bpy.ops.wm.bdsm_draw_label_punchit(text='Illegal Selection!', text2='Make a Selection, will ya...', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=0.05)
                 return
 
-        islands = get_selection_islands(faces, debug=debug)
+        islands = get_selection_islands_punchit(faces, debug=debug)
 
         if not islands:
             bpy.ops.wm.bdsm_draw_label_punchit(text='Pay attention, numbnuts!', text2='Uh, try to select a face, maybe. Or an edge at least.', coords=coords, color=red, color2=yellow, alpha=1, alpha2=0.5, time=0.05)
